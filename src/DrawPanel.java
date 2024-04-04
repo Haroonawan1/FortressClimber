@@ -13,6 +13,6 @@ public class DrawPanel extends JPanel {
         super.paintComponent(g);
         this.setBackground(Color.BLACK);
         g.setColor(Color.blue);
-        g.drawRect(player.getX(), player.getY(), 100, 100);
+        g.drawRect(player.getX(), player.getY(), player.getHitBoxLength(), player.getHitBoxLength());
     }
 }

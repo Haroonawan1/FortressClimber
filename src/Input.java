@@ -13,11 +13,12 @@ public class Input implements KeyListener {
     }
 
     public void keyPressed(KeyEvent e) {
+        int change = player.getPlayerSpeed();
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_D -> player.changeX(10);
-            case KeyEvent.VK_A -> player.changeX(-10);
-            case KeyEvent.VK_W -> player.changeY(-10);
-            case KeyEvent.VK_S -> player.changeY(10);
+            case KeyEvent.VK_D -> player.updatePosition("e", change);
+            case KeyEvent.VK_A -> player.updatePosition("w", change);
+            case KeyEvent.VK_W -> player.updatePosition("n", change);
+            case KeyEvent.VK_S -> player.updatePosition("s", change);
 
         }
     }
