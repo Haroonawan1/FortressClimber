@@ -1,13 +1,12 @@
 package main;
 
 import entities.Player;
-import input.Input;
-import main.DrawPanel;
-
+import mapManager.MapManager;
 import javax.swing.JFrame;
 
 public class MainFrame extends JFrame implements Runnable {
     private DrawPanel drawPanel;
+    private MapManager mapManager;
     private Player player;
     private Input input;
     private Thread thread;
@@ -33,8 +32,9 @@ public class MainFrame extends JFrame implements Runnable {
         frameWidth = numTileWidth * (tileSize * tileScale);
         frameHeight = numTileHeight * (tileSize * tileScale);
 
-        player = new Player(this);
-        drawPanel = new DrawPanel(player);
+        player = new Player(200, 300, 2, 0.25, this);
+        mapManager = new MapManager("data/mapData/dungeonTileSet.png", this);
+        drawPanel = new DrawPanel(player, mapManager);
         input = new Input(player);
 
 
