@@ -1,6 +1,12 @@
+package entities;
+
+import main.MainFrame;
+
+import java.awt.*;
+
 public class Player {
     private MainFrame mainFrame;
-    private int hitBoxSize;
+    private Rectangle hitBox;
     private double velocityX;
     private double velocityY;
     private double x;
@@ -15,11 +21,20 @@ public class Player {
     public Player(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
         falling = true;
-        hitBoxSize = 75;
+        int playerSize = mainFrame.getTileSize() * mainFrame.getTileScale();
+        System.out.println(mainFrame.getTileSize());
+        System.out.println(mainFrame.getTileScale());
+        hitBox = new Rectangle((int) x, (int) y, playerSize, playerSize);
         velocityX = 2;
         velocityY = 0.25;
         x = 200;
         y = 300;
+    }
+
+    public void render(Graphics g) {
+        hitBox.x = (int) x;
+        hitBox.y = (int) y;
+        g.drawRect(hitBox.x, hitBox.y, hitBox.width, hitBox.height);
     }
 
     public void update() {
@@ -45,8 +60,8 @@ public class Player {
     }
 
     public void moveRight() {
-        if ((x + hitBoxSize + 16) + velocityX >= mainFrame.getFrameWidth()) {
-            velocityX = mainFrame.getFrameWidth() - (x + hitBoxSize + 16);
+        if ((x + hitBox.getWidth() + 16) + velocityX >= mainFrame.getFrameWidth()) {
+            velocityX = mainFrame.getFrameWidth() - (x + hitBox.getWidth() + 16);
         }
         x += velocityX;
     }
@@ -63,7 +78,7 @@ public class Player {
     }
 
     public void freeFall() {
-        if ((y + hitBoxSize + 40) + velocityY <= mainFrame.getFrameHeight()) {
+        if ((y + hitBox.getHeight() + 40) + velocityY <= mainFrame.getFrameHeight()) {
             y += velocityY;
             velocityX = 3;
         }
@@ -98,8 +113,8 @@ public class Player {
         this.movingRight = movingRight;
     }
 
-    public int getHitBoxSize() {
-        return hitBoxSize;
+    public Rectangle getHitBox() {
+        return hitBox;
     }
 
     public double getX() {

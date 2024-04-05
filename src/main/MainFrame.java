@@ -1,3 +1,9 @@
+package main;
+
+import entities.Player;
+import input.Input;
+import main.DrawPanel;
+
 import javax.swing.JFrame;
 
 public class MainFrame extends JFrame implements Runnable {
@@ -5,22 +11,32 @@ public class MainFrame extends JFrame implements Runnable {
     private Player player;
     private Input input;
     private Thread thread;
+
     private int fps;
     private int ups;
+    private int numTileWidth;
+    private int numTileHeight;
+    private int tileSize;
+    private int tileScale;
     private int frameWidth;
     private int frameHeight;
 
     public MainFrame() {
         super("Fortress Climber");
 
+        fps = 120;
+        ups = 200;
+        numTileHeight = 10;
+        numTileWidth = 15;
+        tileSize = 16;
+        tileScale = 3;
+        frameWidth = numTileWidth * (tileSize * tileScale);
+        frameHeight = numTileHeight * (tileSize * tileScale);
+
         player = new Player(this);
         drawPanel = new DrawPanel(player);
         input = new Input(player);
 
-        fps = 120;
-        ups = 200;
-        frameWidth = 1000;
-        frameHeight = 600;
 
         this.add(drawPanel);
         this.addKeyListener(input);
@@ -70,6 +86,14 @@ public class MainFrame extends JFrame implements Runnable {
                 lastCheck = System.currentTimeMillis();
             }
         }
+    }
+
+    public int getTileSize() {
+        return tileSize;
+    }
+
+    public int getTileScale() {
+        return tileScale;
     }
 
     public int getFrameWidth() {
