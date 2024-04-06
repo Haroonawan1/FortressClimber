@@ -1,7 +1,7 @@
 package main;
 
 import entities.Player;
-import mapManager.MapManager;
+import map.MapManager;
 import javax.swing.JFrame;
 
 public class MainFrame extends JFrame implements Runnable {
@@ -32,8 +32,8 @@ public class MainFrame extends JFrame implements Runnable {
         frameWidth = numTileWidth * (tileSize * tileScale);
         frameHeight = numTileHeight * (tileSize * tileScale);
 
-        player = new Player(200, 300, 2, 0.25, this);
         mapManager = new MapManager("data/mapData/dungeonTileSet.png", this);
+        player = new Player(200, 300, 0, 0, this, mapManager);
         drawPanel = new DrawPanel(player, mapManager);
         input = new Input(player);
 
@@ -42,7 +42,8 @@ public class MainFrame extends JFrame implements Runnable {
         this.addKeyListener(input);
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setSize(frameWidth, frameHeight);
+        // not sure why I need to add these
+        this.setSize(frameWidth + 14, frameHeight + 38);
         this.setLocation(600, 250);
         this.setResizable(false);
         this.setVisible(true);
@@ -56,9 +57,12 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     public void update() {
+        mapManager.update();
         player.update();
     }
 
+
+    // REMEMBER TO SAY YOU RIPPED THIS OFF
     public void run() {
         double timePerFrame = 1000000000.0 / fps;
         double timePerUpdate = 1000000000.0 / ups;
@@ -86,6 +90,14 @@ public class MainFrame extends JFrame implements Runnable {
                 lastCheck = System.currentTimeMillis();
             }
         }
+    }
+
+    public int getNumTileWidth() {
+        return numTileWidth;
+    }
+
+    public int getNumTileHeight() {
+        return numTileHeight;
     }
 
     public int getTileSize() {

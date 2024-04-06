@@ -1,10 +1,9 @@
 package main;
 
 import entities.Player;
-import mapManager.MapManager;
+import map.MapManager;
 import javax.swing.JPanel;
-import java.awt.Graphics;
-import java.awt.Color;
+import java.awt.*;
 
 public class DrawPanel extends JPanel {
     private Player player;
@@ -18,8 +17,8 @@ public class DrawPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         this.setBackground(Color.BLACK);
-        g.setColor(Color.white);
+        g.setColor(Color.red);
+        mapManager.drawMap(g, "data/mapData/map1");
         player.draw(g);
-        mapManager.drawMap(g);
     }
 }

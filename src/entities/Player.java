@@ -1,25 +1,28 @@
 package entities;
 
 import main.MainFrame;
-import java.awt.*;
+import map.MapManager;
+import java.awt.Graphics;
+import java.awt.Rectangle;
 
 public class Player extends Entity{
+    private int playerSize;
     private boolean movingLeft;
     private boolean movingRight;
     private boolean jumping;
     private boolean falling;
 
-    public Player(double x, double y, double velocityX, double velocityY, MainFrame mainFrame) {
-        super(x, y, velocityX, velocityY, mainFrame);
-        int playerSize = mainFrame.getTileSize() * mainFrame.getTileScale();
-        setHitbox(new Rectangle((int) x, (int) y, playerSize, playerSize));
+    public Player(double x, double y, double velocityX, double velocityY, MainFrame mainFrame, MapManager mapManager) {
+        super(x, y, velocityX, velocityY, mainFrame, mapManager);
+        playerSize = mainFrame.getTileSize() * mainFrame.getTileScale();
+        setHitBox(new Rectangle((int) x, (int) y, playerSize, playerSize));
         falling = true;
     }
 
     public void draw(Graphics g) {
-        getHitbox().x = (int) getX();
-        getHitbox().y = (int) getY();
-        g.drawRect(getHitbox().x, getHitbox().y, getHitbox().width, getHitbox().height);
+        getHitBox().x = (int) getX();
+        getHitBox().y = (int) getY();
+        g.fillRect(getHitBox().x, getHitBox().y, getHitBox().width, getHitBox().height);
     }
 
     public void update() {
@@ -27,47 +30,44 @@ public class Player extends Entity{
     }
 
     public void updatePosition() {
-        if (movingLeft) {
+        if (movingLeft && collisionCheck(getVelocityX() * -1, 0)) {
             moveLeft();
         }
-        if (movingRight) {
+        if (movingRight && collisionCheck(getVelocityX(), 0)) {
             moveRight();
         }
 
-        if (jumping) {
-            super.setVelocityY(-5);
+        if (jumping && collisionCheck(0, getVelocityY())) {
             jump();
         }
-        if (falling) {
+        if (falling && collisionCheck(0, getVelocityY())) {
             freeFall();
-            setVelocityY(getVelocityY() + 0.15);;
+            setVelocityY(getVelocityY() + 0.15);
         }
     }
 
     public void moveRight() {
-        if ((getX() + getHitbox().getWidth() + 16) + getVelocityX() >= getMainFrame().getFrameWidth()) {
-            setVelocityX(getMainFrame().getFrameWidth() - (getX() + getHitbox().getWidth() + 16));
-        }
+        setVelocityX(2);
         setX(getX() + getVelocityX());
     }
 
     public void moveLeft() {
-        if (getX() - getVelocityX() < 0) {
-            setVelocityX(getX());
-        }
+        setVelocityX(2);
         setX(getX() - getVelocityX());
     }
 
     public void jump() {
+        setVelocityY(-5);
         setY(getY() + getVelocityY());
     }
 
     public void freeFall() {
-        if ((getY() + getHitbox().getHeight() + 40) + getVelocityY() <= getMainFrame().getFrameHeight()) {
+        if ((getY() + getHitBox().getHeight()) + getVelocityY() <= getMainFrame().getFrameHeight()) {
             setY(getY() + getVelocityY());
             setVelocityX(3);
         }
         else {
+            setY(getMainFrame().getFrameHeight() - playerSize);
             falling = false;
             setVelocityY(0.25);
             setVelocityX(2);
