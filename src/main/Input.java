@@ -12,7 +12,6 @@ public class Input implements KeyListener {
     }
 
     public void keyTyped(KeyEvent e) {
-
     }
 
     public void keyPressed(KeyEvent e) {
@@ -20,21 +19,23 @@ public class Input implements KeyListener {
             case KeyEvent.VK_D -> player.setMovingRight(true);
             case KeyEvent.VK_A -> player.setMovingLeft(true);
             case KeyEvent.VK_W -> {
-                if (!player.isFalling()) {
-                    player.setJumping(true);
-                }
+                player.setJumping(true);
+                player.setTouchingFloor(false);
             }
         }
     }
 
     public void keyReleased(KeyEvent e) {
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_D -> player.setMovingRight(false);
-            case KeyEvent.VK_A -> player.setMovingLeft(false);
-            case KeyEvent.VK_W -> {
-                player.setJumping(false);
-                player.setFalling(true);
+            case KeyEvent.VK_D -> {
+                player.setMovingRight(false);
+                player.setVelocityX(0);
             }
+            case KeyEvent.VK_A -> {
+                player.setMovingLeft(false);
+                player.setVelocityX(0);
+            }
+            case KeyEvent.VK_W -> player.setJumping(false);
         }
     }
 }

@@ -3,7 +3,8 @@ package main;
 import entities.Player;
 import map.MapManager;
 import javax.swing.JPanel;
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Color;
 
 public class DrawPanel extends JPanel {
     private Player player;

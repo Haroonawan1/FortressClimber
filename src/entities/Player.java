@@ -6,7 +6,6 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 
 public class Player extends Entity{
-    private int playerSize;
     private boolean movingLeft;
     private boolean movingRight;
     private boolean jumping;
@@ -14,9 +13,55 @@ public class Player extends Entity{
 
     public Player(double x, double y, double velocityX, double velocityY, MainFrame mainFrame, MapManager mapManager) {
         super(x, y, velocityX, velocityY, mainFrame, mapManager);
-        playerSize = mainFrame.getTileSize() * mainFrame.getTileScale();
+        int playerSize = mainFrame.getFinalTileSize();
         setHitBox(new Rectangle((int) x, (int) y, playerSize, playerSize));
         falling = true;
+    }
+
+    public void updatePosition() {
+        if (movingLeft && collisionCheck()) {
+            moveLeft();
+        }
+        if (movingRight && collisionCheck()) {
+            moveRight();
+        }
+
+        if (isTouchingFloor()) {
+            setVelocityY(0);
+            falling = false;
+        }
+        if (!isTouchingFloor() && !jumping) {
+            falling = true;
+        }
+
+        if (jumping && collisionCheck()) {
+            jump();
+        }
+        if (falling && collisionCheck()) {
+            freeFall();
+        }
+    }
+
+    public void moveRight() {
+        setVelocityX(2);
+        setX(getX() + getVelocityX());
+    }
+
+    public void moveLeft() {
+        setVelocityX(-2);
+        setX(getX() + getVelocityX());
+    }
+
+    public void jump() {
+        setVelocityX(3);
+        setVelocityY(-4);
+        setY(getY() + getVelocityY());
+    }
+
+    public void freeFall() {
+        setVelocityX(3);
+        setVelocityY(getVelocityY() + 0.15);
+        setY(getY() + getVelocityY());
     }
 
     public void draw(Graphics g) {
@@ -29,65 +74,8 @@ public class Player extends Entity{
         updatePosition();
     }
 
-    public void updatePosition() {
-        if (movingLeft && collisionCheck(getVelocityX() * -1, 0)) {
-            moveLeft();
-        }
-        if (movingRight && collisionCheck(getVelocityX(), 0)) {
-            moveRight();
-        }
-
-        if (jumping && collisionCheck(0, getVelocityY())) {
-            jump();
-        }
-        if (falling && collisionCheck(0, getVelocityY())) {
-            freeFall();
-            setVelocityY(getVelocityY() + 0.15);
-        }
-    }
-
-    public void moveRight() {
-        setVelocityX(2);
-        setX(getX() + getVelocityX());
-    }
-
-    public void moveLeft() {
-        setVelocityX(2);
-        setX(getX() - getVelocityX());
-    }
-
-    public void jump() {
-        setVelocityY(-5);
-        setY(getY() + getVelocityY());
-    }
-
-    public void freeFall() {
-        if ((getY() + getHitBox().getHeight()) + getVelocityY() <= getMainFrame().getFrameHeight()) {
-            setY(getY() + getVelocityY());
-            setVelocityX(3);
-        }
-        else {
-            setY(getMainFrame().getFrameHeight() - playerSize);
-            falling = false;
-            setVelocityY(0.25);
-            setVelocityX(2);
-        }
-    }
-
     public void setJumping(boolean jumping) {
         this.jumping = jumping;
-    }
-
-    public void setFalling(boolean falling) {
-        this.falling = falling;
-    }
-
-    public boolean isJumping() {
-        return jumping;
-    }
-
-    public boolean isFalling() {
-        return falling;
     }
 
     public void setMovingLeft(boolean movingLeft) {

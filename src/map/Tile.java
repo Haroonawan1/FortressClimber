@@ -4,18 +4,18 @@ import java.awt.Rectangle;
 
 public class Tile {
     private Rectangle hitBox;
-    private int tileNum;
+    private int tileID;
 
-    public Tile(int x, int y, int width, int height, int tileNum) {
+    public Tile(int x, int y, int width, int height, int tileID) {
         hitBox = new Rectangle(x, y, width, height);
-        this.tileNum = tileNum;
+        this.tileID = tileID;
     }
 
     public Rectangle getHitBox() {
         return hitBox;
     }
 
-    public int getTileNum() {
-        return tileNum;
+    public int getTileID() {
+        return tileID;
     }
 }

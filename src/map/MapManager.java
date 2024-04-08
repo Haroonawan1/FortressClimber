@@ -12,97 +12,97 @@ import java.util.Scanner;
 
 public class MapManager {
     private MainFrame mainFrame;
-    private BufferedImage tileSet;
-    private BufferedImage[][] tileArray;
+    private BufferedImage tileSetImage;
+    private BufferedImage[][] tileSetArr;
+    private String[][] mapDataFileArr;
     private Tile[] collisionArr;
     private int finalTileSize;
 
     public MapManager(String filePath, MainFrame mainFrame) {
         collisionArr = new Tile[mainFrame.getNumTileWidth() * mainFrame.getNumTileHeight()];
         this.mainFrame = mainFrame;
-        tileSet = loadTileSet(filePath);
-        tileArray = loadTileArray();
-        finalTileSize = mainFrame.getTileSize() * mainFrame.getTileScale();
+        tileSetImage = loadTileSetImage(filePath);
+        tileSetArr = loadTileSetArr();
+        finalTileSize = mainFrame.getFinalTileSize();
     }
 
-    public BufferedImage loadTileSet(String filePath) {
-        tileSet = null;
+    public BufferedImage loadTileSetImage(String filePath) {
+        tileSetImage = null;
         try {
-            return tileSet = ImageIO.read(new File(filePath));
+            return tileSetImage = ImageIO.read(new File(filePath));
         }
         catch (IOException e) {
             System.out.println("File not found");
             System.exit(1);
         }
-        return tileSet;
+        return tileSetImage;
     }
 
-    public BufferedImage[][] loadTileArray() {
-        tileArray = new BufferedImage[15][18];
+    public BufferedImage[][] loadTileSetArr() {
+        tileSetArr = new BufferedImage[15][18];
         for (int row = 0; row < 15; row++) {
             for (int col = 0; col < 18; col++) {
                 int tileSize = mainFrame.getTileSize();
-                tileArray[row][col] = tileSet.getSubimage(row * tileSize, col * tileSize, tileSize, tileSize);
+                tileSetArr[row][col] = tileSetImage.getSubimage(row * tileSize, col * tileSize, tileSize, tileSize);
             }
         }
-        return tileArray;
+        return tileSetArr;
     }
 
-    public String[][] loadMapData(String mapDataFileName) {
-        File mapData = new File(mapDataFileName);
+    public String[][] loadMapDataFile(String fileName) {
+        File mapDataFile = new File(fileName);
         Scanner s = null;
         try {
-            s = new Scanner(mapData);
+            s = new Scanner(mapDataFile);
         }
         catch (FileNotFoundException e) {
             System.out.println("File not found");
             System.exit(1);
         }
 
-        ArrayList<String> fileData = new ArrayList<>();
+        ArrayList<String> tempArr = new ArrayList<>();
         while (s.hasNextLine()) {
-            fileData.add(s.nextLine());
+            tempArr.add(s.nextLine());
         }
 
-        String[][] mapDataArr = new String[mainFrame.getNumTileHeight()][mainFrame.getNumTileWidth()];
-        for (int i = 0; i < mapDataArr.length; i++) {
-            mapDataArr[i] = fileData.get(i).split(" ");
+        String[][] mapDataFileArr = new String[mainFrame.getNumTileHeight()][mainFrame.getNumTileWidth()];
+        for (int i = 0; i < mapDataFileArr.length; i++) {
+            mapDataFileArr[i] = tempArr.get(i).split(" ");
         }
-        return mapDataArr;
+        return mapDataFileArr;
     }
 
-    public void drawMap(Graphics g, String mapDataFileName) {
-        String[][] mapDataArr = loadMapData(mapDataFileName);
+    public void updateCollisionArr(String[][] mapDataFileArr) {
+        for (int row = 0; row < mapDataFileArr.length; row++) {
+            for (int col = 0; col < mapDataFileArr[0].length; col++) {
+                int tileID = Integer.parseInt(mapDataFileArr[row][col]);
+                int index = (row * mainFrame.getNumTileWidth()) + col;
+                collisionArr[index] = new Tile(col * finalTileSize, row * finalTileSize, finalTileSize, finalTileSize, tileID);
+            }
+        }
+    }
 
-        for (int row = 0; row < mapDataArr.length; row++) {
-            for (int col = 0; col < mapDataArr[0].length; col++) {
-                int tileNum = Integer.parseInt(mapDataArr[row][col]);
-                int tileSheetY = 0;
-                int tileSheetX = tileNum;
+    public void drawMap(Graphics g, String fileName) {
+        mapDataFileArr = loadMapDataFile(fileName);
 
-                while (tileSheetX > mainFrame.getNumTileWidth()) {
-                    tileSheetY++;
-                    tileSheetX -= mainFrame.getNumTileWidth();
+        for (int row = 0; row < mapDataFileArr.length; row++) {
+            for (int col = 0; col < mapDataFileArr[0].length; col++) {
+                int tileId = Integer.parseInt(mapDataFileArr[row][col]);
+                int tileSetX = 0;
+                int tileSetY = tileId;
+
+                while (tileSetY > tileSetArr.length) {
+                    tileSetX++;
+                    tileSetY -= tileSetArr.length;
                 }
 
-                finalTileSize = mainFrame.getTileSize() * mainFrame.getTileScale();
-                g.drawImage(tileArray[tileSheetY][tileSheetX], col * finalTileSize, row * finalTileSize, finalTileSize, finalTileSize,  null);
+                g.drawImage(tileSetArr[tileSetY][tileSetX], col * finalTileSize, row * finalTileSize, finalTileSize, finalTileSize,  null);
             }
         }
     }
 
     public void update() {
-        updateCollisionArr(loadMapData("data/mapData/map1"));
-    }
-
-    public void updateCollisionArr(String[][] mapDataArr) {
-        for (int row = 0; row < mapDataArr.length; row++) {
-            for (int col = 0; col < mapDataArr[0].length; col++) {
-                int tileNum = Integer.parseInt(mapDataArr[row][col]);
-                finalTileSize = mainFrame.getTileSize() * mainFrame.getTileScale();
-                collisionArr[(row * 15) + col] = new Tile(col * finalTileSize, row * finalTileSize, finalTileSize, finalTileSize, tileNum);
-            }
-        }
+        updateCollisionArr(loadMapDataFile("data/mapData/map1"));
     }
 
     public Tile[] getCollisionArr() {

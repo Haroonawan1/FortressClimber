@@ -3,6 +3,7 @@ package main;
 import entities.Player;
 import map.MapManager;
 import javax.swing.JFrame;
+import javax.swing.ImageIcon;
 
 public class MainFrame extends JFrame implements Runnable {
     private DrawPanel drawPanel;
@@ -10,13 +11,13 @@ public class MainFrame extends JFrame implements Runnable {
     private Player player;
     private Input input;
     private Thread thread;
-
     private int fps;
     private int ups;
     private int numTileWidth;
     private int numTileHeight;
     private int tileSize;
     private int tileScale;
+    private int finalTileSize;
     private int frameWidth;
     private int frameHeight;
 
@@ -25,26 +26,27 @@ public class MainFrame extends JFrame implements Runnable {
 
         fps = 120;
         ups = 200;
-        numTileHeight = 10;
-        numTileWidth = 15;
+        numTileHeight = 15;
+        numTileWidth = 30;
         tileSize = 16;
         tileScale = 3;
+        finalTileSize = tileSize * tileScale;
         frameWidth = numTileWidth * (tileSize * tileScale);
         frameHeight = numTileHeight * (tileSize * tileScale);
 
         mapManager = new MapManager("data/mapData/dungeonTileSet.png", this);
-        player = new Player(200, 300, 0, 0, this, mapManager);
+        player = new Player(100, 100, 0, 0, this, mapManager);
         drawPanel = new DrawPanel(player, mapManager);
         input = new Input(player);
-
 
         this.add(drawPanel);
         this.addKeyListener(input);
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setIconImage(new ImageIcon("data/miscData/fortressIcon.png").getImage());
         // not sure why I need to add these
         this.setSize(frameWidth + 14, frameHeight + 38);
-        this.setLocation(600, 250);
+        this.setLocation(300, 200);
         this.setResizable(false);
         this.setVisible(true);
 
@@ -60,7 +62,6 @@ public class MainFrame extends JFrame implements Runnable {
         mapManager.update();
         player.update();
     }
-
 
     // REMEMBER TO SAY YOU RIPPED THIS OFF
     public void run() {
@@ -108,11 +109,7 @@ public class MainFrame extends JFrame implements Runnable {
         return tileScale;
     }
 
-    public int getFrameWidth() {
-        return frameWidth;
-    }
-
-    public int getFrameHeight() {
-        return frameHeight;
+    public int getFinalTileSize(){
+        return finalTileSize;
     }
 }

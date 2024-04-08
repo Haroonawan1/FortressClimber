@@ -3,18 +3,17 @@ package entities;
 import main.MainFrame;
 import map.MapManager;
 import map.Tile;
-
-import java.awt.*;
+import java.awt.Rectangle;
 
 public class Entity {
+    private Rectangle hitBox;
+    private MainFrame mainFrame;
+    private MapManager mapManager;
     private double x;
     private double y;
     private double velocityX;
     private double velocityY;
-    private Rectangle hitBox;
-    private MainFrame mainFrame;
-    private MapManager mapManager;
-    private boolean colliding;
+    private boolean touchingFloor;
 
     public Entity(double x, double y, double velocityX, double velocityY, MainFrame mainFrame, MapManager mapManager) {
         this.x = x;
@@ -25,58 +24,52 @@ public class Entity {
         this.mapManager = mapManager;
     }
 
-    public boolean collisionCheck(double deltaX, double deltaY) {
+    public boolean collisionCheck() {
         double[] xValues = new double[]{hitBox.x, hitBox.x + hitBox.width, hitBox.x + hitBox.width, hitBox.x};
         double[] yValues = new double[]{hitBox.y, hitBox.y, hitBox.y + hitBox.height, hitBox.y + hitBox.height};
+        Tile[] collisionArr = mapManager.getCollisionArr();
+        String solidTileIDs = ":16:17:18:20:21:31:32:33:35:36:46:47:48:50:51:76:77:78:91:92:93:106:107:108:";
 
-        boolean p1 = false;
-        boolean p2 = false;
-        boolean p3 = false;
-        boolean p4 = false;
+        for (Tile tile : collisionArr) {
+            if (solidTileIDs.contains(":" + tile.getTileID() + ":")) {
+                boolean p1 = tile.getHitBox().contains(xValues[0] + velocityX, yValues[0] + velocityY);
+                boolean p2 = tile.getHitBox().contains(xValues[1] + velocityX, yValues[1] + velocityY);
+                boolean p3 = tile.getHitBox().contains(xValues[2] + velocityX, yValues[2] + velocityY);
+                boolean p4 = tile.getHitBox().contains(xValues[3] + velocityX, yValues[3] + velocityY);
 
-        for (Tile tile : mapManager.getCollisionArr()) {
-            if (tile.getTileNum() != 0) {
-
-                p1 = tile.getHitBox().contains(xValues[0] + deltaX, yValues[0] + deltaY);
-                p2 = tile.getHitBox().contains(xValues[1] + deltaX, yValues[1] + deltaY);
-                p3 = tile.getHitBox().contains(xValues[2] + deltaX, yValues[2] + deltaY);
-                p4 = tile.getHitBox().contains(xValues[3] + deltaX, yValues[3] + deltaY);
-
-
-                if (deltaY > 0 && (p3 || p4)) {
-                    //velocityY = 0;
-                    y = tile.getHitBox().getY() - hitBox.height;
-                    return false;
-                }
-
-                if (deltaY < 0 && (p1 || p2)) {
+                if (velocityY > 0 && (p3 || p4)) {
                     velocityY = 0;
-                    y = tile.getHitBox().getY() + hitBox.height;
+                    y = tile.getHitBox().getY() - hitBox.height - 1;
+                    touchingFloor = true;
                     return false;
                 }
 
-                if (deltaX < 0 && (p1 || p4)) {
-                    velocityX = 0;
+                if (velocityY < 0 && (p1 || p2)) {
+                    y = tile.getHitBox().getY() + hitBox.height + 1;
+                    return false;
+                }
+
+                if (velocityX < 0 && (p1 || p4)) {
                     x = tile.getHitBox().getX() + hitBox.width;
                     return false;
                 }
-                if (deltaX > 0 && (p2 || p3)) {
-                    velocityX = 0;
+                if (velocityX > 0 && (p2 || p3)) {
                     x = tile.getHitBox().getX() - hitBox.width;
                     return false;
                 }
             }
+            //System.out.println("touching floor: " + isTouchingFloor() + " | velX: " + velocityX + " | VelY: " + velocityY);
         }
-        colliding = false;
         return true;
     }
 
-    public boolean isColliding() {
-        return colliding;
+
+    public boolean isTouchingFloor() {
+        return touchingFloor;
     }
 
-    public void setColliding(boolean colliding) {
-        this.colliding = colliding;
+    public void setTouchingFloor(boolean touchingFloor) {
+        this.touchingFloor = touchingFloor;
     }
 
     public double getX() {
@@ -117,9 +110,5 @@ public class Entity {
 
     public void setHitBox(Rectangle hitBox) {
         this.hitBox = hitBox;
-    }
-
-    public MainFrame getMainFrame() {
-        return mainFrame;
     }
 }
