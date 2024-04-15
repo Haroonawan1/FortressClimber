@@ -40,7 +40,6 @@ public class Entity {
                 if (velocityY > 0 && (p3 || p4)) {
                     velocityY = 0;
                     y = tile.getHitBox().getY() - hitBox.height - 1;
-                    touchingFloor = true;
                     return false;
                 }
 
@@ -58,11 +57,24 @@ public class Entity {
                     return false;
                 }
             }
-            //System.out.println("touching floor: " + isTouchingFloor() + " | velX: " + velocityX + " | VelY: " + velocityY);
+            System.out.println("touching floor: " + isTouchingFloor() + " | velX: " + velocityX + " | VelY: " + velocityY);
         }
         return true;
     }
 
+
+    public void touchingFloorCheck(Tile[] collisionArr) {
+        boolean p3 = true;
+        boolean p4 = true;
+
+
+        if (p3 || p4) {
+            touchingFloor = true;
+        }
+        else {
+            touchingFloor = false;
+        }
+    }
 
     public boolean isTouchingFloor() {
         return touchingFloor;

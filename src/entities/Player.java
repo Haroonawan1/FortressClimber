@@ -53,13 +53,11 @@ public class Player extends Entity{
     }
 
     public void jump() {
-        setVelocityX(3);
         setVelocityY(-4);
         setY(getY() + getVelocityY());
     }
 
     public void freeFall() {
-        setVelocityX(3);
         setVelocityY(getVelocityY() + 0.15);
         setY(getY() + getVelocityY());
     }

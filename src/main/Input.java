@@ -18,10 +18,7 @@ public class Input implements KeyListener {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_D -> player.setMovingRight(true);
             case KeyEvent.VK_A -> player.setMovingLeft(true);
-            case KeyEvent.VK_W -> {
-                player.setJumping(true);
-                player.setTouchingFloor(false);
-            }
+            case KeyEvent.VK_W -> player.setJumping(true);
         }
     }
 
