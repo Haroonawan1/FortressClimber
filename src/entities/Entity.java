@@ -31,11 +31,14 @@ public class Entity {
         String solidTileIDs = ":16:17:18:20:21:31:32:33:35:36:46:47:48:50:51:76:77:78:91:92:93:106:107:108:";
 
         for (Tile tile : collisionArr) {
+
             if (solidTileIDs.contains(":" + tile.getTileID() + ":")) {
                 boolean p1 = tile.getHitBox().contains(xValues[0] + velocityX, yValues[0] + velocityY);
                 boolean p2 = tile.getHitBox().contains(xValues[1] + velocityX, yValues[1] + velocityY);
                 boolean p3 = tile.getHitBox().contains(xValues[2] + velocityX, yValues[2] + velocityY);
                 boolean p4 = tile.getHitBox().contains(xValues[3] + velocityX, yValues[3] + velocityY);
+
+                touchingFloorCheck(tile);
 
                 if (velocityY > 0 && (p3 || p4)) {
                     velocityY = 0;
@@ -57,22 +60,16 @@ public class Entity {
                     return false;
                 }
             }
-            System.out.println("touching floor: " + isTouchingFloor() + " | velX: " + velocityX + " | VelY: " + velocityY);
         }
         return true;
     }
 
 
-    public void touchingFloorCheck(Tile[] collisionArr) {
-        boolean p3 = true;
-        boolean p4 = true;
-
-
+    public void touchingFloorCheck(Tile tile) {
+        boolean p3 = tile.getHitBox().contains(hitBox.x + hitBox.width, hitBox.y + hitBox.height + 1);
+        boolean p4 = tile.getHitBox().contains(hitBox.x, hitBox.y + hitBox.height + 1);
         if (p3 || p4) {
             touchingFloor = true;
-        }
-        else {
-            touchingFloor = false;
         }
     }
 
