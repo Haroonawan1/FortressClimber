@@ -32,13 +32,34 @@ public class Entity {
 
         for (Tile tile : collisionArr) {
 
+
+            // this only checks one tile but the player maybe spread over two tiles so figure that out
+
+            boolean check1 = tile.getHitBox().y == hitBox.y + hitBox.height + 1;
+            boolean check2 = hitBox.x >= tile.getHitBox().x;
+            boolean check3 = hitBox.x <= tile.getHitBox().x + tile.getHitBox().width;
+
+            if (check1 && (check2 && check3)) {
+                boolean p5 = tile.getHitBox().contains(hitBox.x + hitBox.width, hitBox.y + hitBox.height + 1);
+                boolean p6 = tile.getHitBox().contains(hitBox.x, hitBox.y + hitBox.height + 1);
+                if (p5 || p6) {
+                    touchingFloor = true;
+                }
+                else {
+                    touchingFloor = false;
+                }
+                System.out.println("tile y: " + tile.getHitBox().y + " | check: " + (hitBox.y + hitBox.height + 1) + " | player x: " + hitBox.x + " | check 1: " + tile.getHitBox().x + " | check 2: " + (tile.getHitBox().x + tile.getHitBox().width) + " | b1: " + check1 + " | b2: " + check2 + " | b3: " + check3 + " | botLeft: " + p5 + " | botright: " + p6 + " | touching: " + touchingFloor);
+            }
+
             if (solidTileIDs.contains(":" + tile.getTileID() + ":")) {
                 boolean p1 = tile.getHitBox().contains(xValues[0] + velocityX, yValues[0] + velocityY);
                 boolean p2 = tile.getHitBox().contains(xValues[1] + velocityX, yValues[1] + velocityY);
                 boolean p3 = tile.getHitBox().contains(xValues[2] + velocityX, yValues[2] + velocityY);
                 boolean p4 = tile.getHitBox().contains(xValues[3] + velocityX, yValues[3] + velocityY);
 
-                touchingFloorCheck(tile);
+
+
+
 
                 if (velocityY > 0 && (p3 || p4)) {
                     velocityY = 0;
@@ -62,16 +83,7 @@ public class Entity {
             }
         }
         return true;
-    }
-
-
-    public void touchingFloorCheck(Tile tile) {
-        boolean p3 = tile.getHitBox().contains(hitBox.x + hitBox.width, hitBox.y + hitBox.height + 1);
-        boolean p4 = tile.getHitBox().contains(hitBox.x, hitBox.y + hitBox.height + 1);
-        if (p3 || p4) {
-            touchingFloor = true;
-        }
-    }
+}
 
     public boolean isTouchingFloor() {
         return touchingFloor;
