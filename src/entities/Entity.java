@@ -14,6 +14,7 @@ public class Entity {
     private double velocityX;
     private double velocityY;
     private boolean touchingFloor;
+    private boolean touchingCeiling;
 
     public Entity(double x, double y, double velocityX, double velocityY, MainFrame mainFrame, MapManager mapManager) {
         this.x = x;
@@ -31,25 +32,7 @@ public class Entity {
         String solidTileIDs = ":16:17:18:20:21:31:32:33:35:36:46:47:48:50:51:76:77:78:91:92:93:106:107:108:";
 
         for (Tile tile : collisionArr) {
-
-
-            // this only checks one tile but the player maybe spread over two tiles so figure that out
-
-            boolean check1 = tile.getHitBox().y == hitBox.y + hitBox.height + 1;
-            boolean check2 = hitBox.x >= tile.getHitBox().x;
-            boolean check3 = hitBox.x <= tile.getHitBox().x + tile.getHitBox().width;
-
-            if (check1 && (check2 && check3)) {
-                boolean p5 = tile.getHitBox().contains(hitBox.x + hitBox.width, hitBox.y + hitBox.height + 1);
-                boolean p6 = tile.getHitBox().contains(hitBox.x, hitBox.y + hitBox.height + 1);
-                if (p5 || p6) {
-                    touchingFloor = true;
-                }
-                else {
-                    touchingFloor = false;
-                }
-                System.out.println("tile y: " + tile.getHitBox().y + " | check: " + (hitBox.y + hitBox.height + 1) + " | player x: " + hitBox.x + " | check 1: " + tile.getHitBox().x + " | check 2: " + (tile.getHitBox().x + tile.getHitBox().width) + " | b1: " + check1 + " | b2: " + check2 + " | b3: " + check3 + " | botLeft: " + p5 + " | botright: " + p6 + " | touching: " + touchingFloor);
-            }
+            touchingFloorCheck(tile, solidTileIDs);
 
             if (solidTileIDs.contains(":" + tile.getTileID() + ":")) {
                 boolean p1 = tile.getHitBox().contains(xValues[0] + velocityX, yValues[0] + velocityY);
@@ -57,18 +40,14 @@ public class Entity {
                 boolean p3 = tile.getHitBox().contains(xValues[2] + velocityX, yValues[2] + velocityY);
                 boolean p4 = tile.getHitBox().contains(xValues[3] + velocityX, yValues[3] + velocityY);
 
-
-
-
-
                 if (velocityY > 0 && (p3 || p4)) {
-                    velocityY = 0;
                     y = tile.getHitBox().getY() - hitBox.height - 1;
                     return false;
                 }
 
                 if (velocityY < 0 && (p1 || p2)) {
                     y = tile.getHitBox().getY() + hitBox.height + 1;
+                    touchingCeiling = true;
                     return false;
                 }
 
@@ -80,10 +59,26 @@ public class Entity {
                     x = tile.getHitBox().getX() - hitBox.width;
                     return false;
                 }
+
+
             }
+            System.out.println("touchingcielign: " + touchingCeiling);
         }
         return true;
-}
+    }
+
+
+    public void touchingFloorCheck(Tile tile, String solidTileIDs) {
+        boolean check1 = tile.getHitBox().y == hitBox.y + hitBox.height + 1;
+        boolean check2 = tile.getHitBox().x <= hitBox.x && hitBox.x <= tile.getHitBox().x + tile.getHitBox().width;
+        boolean check3 = tile.getHitBox().x <= hitBox.x + hitBox.width && hitBox.x + hitBox.width <= tile.getHitBox().x + tile.getHitBox().width;
+
+        if (check1 && (check2 || check3) ){
+            touchingFloor = solidTileIDs.contains(":" + tile.getTileID() + ":");
+        }
+
+        //System.out.println("tile y: " + tile.getHitBox().y + " | player check y: " + (hitBox.y + hitBox.height + 1) + " | player x: " + hitBox.x + " | tile x left: " + tile.getHitBox().x + " | tile x right: " + (tile.getHitBox().x + tile.getHitBox().width) + " | touching: " + touchingFloor);
+    }
 
     public boolean isTouchingFloor() {
         return touchingFloor;
@@ -91,6 +86,10 @@ public class Entity {
 
     public void setTouchingFloor(boolean touchingFloor) {
         this.touchingFloor = touchingFloor;
+    }
+
+    public boolean isTouchingCeiling() {
+        return touchingCeiling;
     }
 
     public double getX() {
