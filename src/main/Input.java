@@ -18,29 +18,28 @@ public class Input implements KeyListener {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_D -> player.setMovingRight(true);
             case KeyEvent.VK_A -> player.setMovingLeft(true);
-            case KeyEvent.VK_W -> player.setJumping(true);
+            case KeyEvent.VK_W -> {
+                if (player.isTouchingFloor() && !player.isJumping()) {
+                    player.setJumping(true);
+                }
+            }
         }
-
     }
 
     public void keyReleased(KeyEvent e) {
-
         switch (e.getKeyCode()) {
             case KeyEvent.VK_D -> {
                 player.setMovingRight(false);
                 player.setVelocityX(0);
-
             }
             case KeyEvent.VK_A -> {
                 player.setMovingLeft(false);
                 player.setVelocityX(0);
-
             }
             case KeyEvent.VK_W -> {
-                player.setJumping(false);
+                //player.setJumping(false);
                 player.setTouchingFloor(false);
             }
         }
-
     }
 }

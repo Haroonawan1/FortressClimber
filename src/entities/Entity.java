@@ -15,6 +15,7 @@ public class Entity {
     private double velocityY;
     private boolean touchingFloor;
     private boolean touchingCeiling;
+    private boolean touchingWall;
 
     public Entity(double x, double y, double velocityX, double velocityY, MainFrame mainFrame, MapManager mapManager) {
         this.x = x;
@@ -44,40 +45,39 @@ public class Entity {
                     y = tile.getHitBox().getY() - hitBox.height - 1;
                     return false;
                 }
-
                 if (velocityY < 0 && (p1 || p2)) {
                     y = tile.getHitBox().getY() + hitBox.height + 1;
+                    velocityY = 0;
                     touchingCeiling = true;
                     return false;
+                }
+                else {
+                    touchingCeiling = false;
                 }
 
                 if (velocityX < 0 && (p1 || p4)) {
                     x = tile.getHitBox().getX() + hitBox.width;
+                    touchingWall = true;
                     return false;
                 }
-                if (velocityX > 0 && (p2 || p3)) {
+                else if (velocityX > 0 && (p2 || p3)) {
                     x = tile.getHitBox().getX() - hitBox.width;
+                    touchingWall = true;
                     return false;
                 }
-
-
             }
-            System.out.println("touchingcielign: " + touchingCeiling);
         }
         return true;
     }
 
-
     public void touchingFloorCheck(Tile tile, String solidTileIDs) {
-        boolean check1 = tile.getHitBox().y == hitBox.y + hitBox.height + 1;
-        boolean check2 = tile.getHitBox().x <= hitBox.x && hitBox.x <= tile.getHitBox().x + tile.getHitBox().width;
-        boolean check3 = tile.getHitBox().x <= hitBox.x + hitBox.width && hitBox.x + hitBox.width <= tile.getHitBox().x + tile.getHitBox().width;
+        boolean height = tile.getHitBox().y == hitBox.y + hitBox.height + 1;
+        boolean bottomLeft = tile.getHitBox().x <= hitBox.x && hitBox.x <= tile.getHitBox().x + tile.getHitBox().width;
+        boolean bottomRight = tile.getHitBox().x <= hitBox.x + hitBox.width && hitBox.x + hitBox.width <= tile.getHitBox().x + tile.getHitBox().width;
 
-        if (check1 && (check2 || check3) ){
+        if (height && (bottomLeft || bottomRight) ){
             touchingFloor = solidTileIDs.contains(":" + tile.getTileID() + ":");
         }
-
-        //System.out.println("tile y: " + tile.getHitBox().y + " | player check y: " + (hitBox.y + hitBox.height + 1) + " | player x: " + hitBox.x + " | tile x left: " + tile.getHitBox().x + " | tile x right: " + (tile.getHitBox().x + tile.getHitBox().width) + " | touching: " + touchingFloor);
     }
 
     public boolean isTouchingFloor() {
@@ -90,6 +90,10 @@ public class Entity {
 
     public boolean isTouchingCeiling() {
         return touchingCeiling;
+    }
+
+    public boolean isTouchingWall() {
+        return touchingWall;
     }
 
     public double getX() {
