@@ -36,6 +36,7 @@ public class Entity {
             touchingFloorCheck(tile, solidTileIDs);
 
             if (solidTileIDs.contains(":" + tile.getTileID() + ":")) {
+
                 boolean p1 = tile.getHitBox().contains(xValues[0] + velocityX, yValues[0] + velocityY);
                 boolean p2 = tile.getHitBox().contains(xValues[1] + velocityX, yValues[1] + velocityY);
                 boolean p3 = tile.getHitBox().contains(xValues[2] + velocityX, yValues[2] + velocityY);
@@ -70,6 +71,11 @@ public class Entity {
         return true;
     }
 
+
+
+
+    // summed up issue: the player is still touching the floor for an additonal tile (48 pixels) when the player jumpns also double jump
+
     public void touchingFloorCheck(Tile tile, String solidTileIDs) {
         boolean height = tile.getHitBox().y == hitBox.y + hitBox.height + 1;
         boolean bottomLeft = tile.getHitBox().x <= hitBox.x && hitBox.x <= tile.getHitBox().x + tile.getHitBox().width;
@@ -77,7 +83,10 @@ public class Entity {
 
         if (height && (bottomLeft || bottomRight) ){
             touchingFloor = solidTileIDs.contains(":" + tile.getTileID() + ":");
+            //System.out.println("playery: " + hitBox.y + " | player y + height + 1: " + (hitBox.y + hitBox.height + 1) + " | tile height: " + tile.getHitBox().y + " toucungflor: " + touchingFloor);
+
         }
+
     }
 
     public boolean isTouchingFloor() {
