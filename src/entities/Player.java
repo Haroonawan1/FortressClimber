@@ -46,7 +46,6 @@ public class Player extends Entity{
         }
         if (isTouchingCeiling()) {
             jumping = false;
-            //jumpHeightCount = 0;
         }
         if (!jumping) {
             jumpHeightCount = 0;
@@ -74,12 +73,12 @@ public class Player extends Entity{
     }
 
     public void freeFall() {
-        setVelocityY(getVelocityY() + 1);
+        setVelocityY(getVelocityY() + 0.15);
         setY(getY() + getVelocityY());
     }
 
     public void draw(Graphics g) {
-        System.out.println("x: " + getX() + " | y: " + getY() + " | xvel: " + getVelocityX() + " | yvel: " + getVelocityY() + " | jumpcount: " + jumpHeightCount + " | jumping: " + jumping + " | touchingflorr: " + isTouchingFloor());
+        System.out.println("x: " + getX() + " | y: " + getY() +  "  | collision y: " + (getY() + getHitBox().height + 1) + " | xvel: " + getVelocityX() + " | yvel: " + getVelocityY() + " | jumpcount: " + jumpHeightCount + " | jumping: " + jumping + " | touchingflorr: " + isTouchingFloor());
         getHitBox().x = (int) getX();
         getHitBox().y = (int) getY();
         g.fillRect(getHitBox().x, getHitBox().y, getHitBox().width, getHitBox().height);

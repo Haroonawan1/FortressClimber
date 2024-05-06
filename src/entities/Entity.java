@@ -71,10 +71,8 @@ public class Entity {
         return true;
     }
 
-
-
-
-    // summed up issue: the player is still touching the floor for an additonal tile (48 pixels) when the player jumpns also double jump
+    // summed up issue: the player is still touching the floor for an additional tile (48 pixels) when the player jumps also double jump
+    // touching floor works as expected 85 percent sure
 
     public void touchingFloorCheck(Tile tile, String solidTileIDs) {
         boolean height = tile.getHitBox().y == hitBox.y + hitBox.height + 1;
@@ -83,10 +81,10 @@ public class Entity {
 
         if (height && (bottomLeft || bottomRight) ){
             touchingFloor = solidTileIDs.contains(":" + tile.getTileID() + ":");
-            //System.out.println("playery: " + hitBox.y + " | player y + height + 1: " + (hitBox.y + hitBox.height + 1) + " | tile height: " + tile.getHitBox().y + " toucungflor: " + touchingFloor);
 
+            //System.out.println("playery: " + hitBox.y + " | player y + height + 1: " + (hitBox.y + hitBox.height + 1) + " | tile height: " + tile.getHitBox().y + " | height: " + height + " | botleft: " + bottomLeft + " | botRight: " + bottomRight + " | toouchingfloor: " + touchingFloor + " | solid?: " + (solidTileIDs.contains(":" + tile.getTileID() + ":")) );
         }
-
+        //System.out.println("height: " + height + " | tile hitbox y: " + tile.getHitBox().y + " | player y: " + y + " | solid?: " + (solidTileIDs.contains(":" + tile.getTileID() + ":")));
     }
 
     public boolean isTouchingFloor() {

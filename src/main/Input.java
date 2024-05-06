@@ -38,7 +38,6 @@ public class Input implements KeyListener {
             }
             case KeyEvent.VK_W -> {
                 player.setJumping(false);
-                player.setTouchingFloor(false);
             }
         }
     }
