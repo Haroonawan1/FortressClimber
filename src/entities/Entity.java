@@ -37,10 +37,10 @@ public class Entity {
 
             if (solidTileIDs.contains(":" + tile.getTileID() + ":")) {
 
-                boolean p1 = tile.getHitBox().contains(xValues[0] + velocityX, yValues[0] + velocityY);
-                boolean p2 = tile.getHitBox().contains(xValues[1] + velocityX, yValues[1] + velocityY);
-                boolean p3 = tile.getHitBox().contains(xValues[2] + velocityX, yValues[2] + velocityY);
-                boolean p4 = tile.getHitBox().contains(xValues[3] + velocityX, yValues[3] + velocityY);
+                boolean p1 = tile.getHitBox().contains(xValues[0] + velocityX, yValues[0] + (velocityY * 2));
+                boolean p2 = tile.getHitBox().contains(xValues[1] + velocityX, yValues[1] + (velocityY * 2));
+                boolean p3 = tile.getHitBox().contains(xValues[2] + velocityX, yValues[2] + (velocityY * 2));
+                boolean p4 = tile.getHitBox().contains(xValues[3] + velocityX, yValues[3] + (velocityY * 2));
 
                 if (velocityY > 0 && (p3 || p4)) {
                     y = tile.getHitBox().getY() - hitBox.height - 1;
@@ -57,14 +57,25 @@ public class Entity {
                 }
 
                 if (velocityX < 0 && (p1 || p4)) {
-                    x = tile.getHitBox().getX() + hitBox.width;
+                    x = tile.getHitBox().getX() + hitBox.width + 1;
                     touchingWall = true;
+                    velocityX = 0;
+                    velocityY = 0;
                     return false;
                 }
-                else if (velocityX > 0 && (p2 || p3)) {
-                    x = tile.getHitBox().getX() - hitBox.width;
+                else {
+                    touchingWall = false;
+                }
+
+                if (velocityX > 0 && (p2 || p3)) {
+                    x = tile.getHitBox().getX() - hitBox.width - 1;
                     touchingWall = true;
+                    velocityX = 0;
+                    velocityY = 0;
                     return false;
+                }
+                else {
+                    touchingWall = false;
                 }
             }
         }
