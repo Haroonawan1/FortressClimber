@@ -2,8 +2,8 @@ package entities;
 
 import main.MainFrame;
 import map.MapManager;
-import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.Graphics;
 
 public class Player extends Entity{
     private boolean movingLeft;
@@ -21,33 +21,39 @@ public class Player extends Entity{
     }
 
     public void updatePosition() {
-        if (movingLeft && collisionCheck()) {
+
+        if (isTouchingWall()) {
+            setVelocityX(0);
+        }
+        else if (movingLeft && collisionCheck()) {
             moveLeft();
         }
-        if (movingRight && collisionCheck()) {
+        else if (movingRight && collisionCheck()) {
             moveRight();
         }
 
-        if (isTouchingFloor()) {
+
+        if (isTouchingWall() && getHitBox().y != 575) {
+            sliding();
+        }
+
+
+
+        if (jumping && collisionCheck()) {
+            jump(144);
+
+        }
+
+
+
+        if ((!isTouchingFloor() && !jumping && !isTouchingWall()) || isTouchingCeiling()) {
+            falling = true;
+        }
+        else {
             setVelocityY(0);
             falling = false;
         }
-        if ((!isTouchingFloor() && !jumping) || isTouchingCeiling()) {
-            falling = true;
-        }
 
-        if (jumping && collisionCheck()) {
-            jump();
-            jumpHeightCount += getVelocityY();
-            setTouchingFloor(false);
-            if (jumpHeightCount + getVelocityY() < -144) {
-                jumping = false;
-                jumpHeightCount = 0;
-            }
-            if (isTouchingCeiling()) {
-                jumping = false;
-            }
-        }
 
         if (falling && collisionCheck()) {
             freeFall();
@@ -64,9 +70,18 @@ public class Player extends Entity{
         setX(getX() + getVelocityX());
     }
 
-    public void jump() {
+    public void jump(int limit) {
         setVelocityY(-4);
         setY(getY() + getVelocityY());
+        jumpHeightCount += (int) getVelocityY();
+        setTouchingFloor(false);
+        if (jumpHeightCount + getVelocityY() < -limit) {
+            jumping = false;
+            jumpHeightCount = 0;
+        }
+        if (isTouchingCeiling()) {
+            jumping = false;
+        }
     }
 
     public void freeFall() {
@@ -74,8 +89,16 @@ public class Player extends Entity{
         setY(getY() + getVelocityY());
     }
 
+
+    // currently you are not linearly speeding up as you fall because the logic for setting falling is setting velocityY to 0
+    public void sliding() {
+        setVelocityY(getVelocityY() + 0.1);
+        setY(getY() + getVelocityY());
+    }
+
     public void draw(Graphics g) {
-        System.out.println("x: " + getX() + " | y: " + getY() + " | xvel: " + getVelocityX() + " | yvel: " + getVelocityY() + " | touchignwall: " + isTouchingWall());
+        //System.out.println("canSlide: " + canSlide() + " | touchingfloor: " + isTouchingFloor() + " | velx: " + getVelocityX() +  " | vely: " + getVelocityY());
+        //System.out.println("x: " + getX() + " | y: " + getY() + " | xvel: " + getVelocityX() + " | yvel: " + getVelocityY() + " | left: " + movingLeft + " | right: " + movingRight + " | wall: " + isTouchingWall());
         getHitBox().x = (int) getX();
         getHitBox().y = (int) getY();
         g.fillRect(getHitBox().x, getHitBox().y, getHitBox().width, getHitBox().height);

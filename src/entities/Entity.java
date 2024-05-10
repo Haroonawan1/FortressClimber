@@ -37,15 +37,19 @@ public class Entity {
 
             if (solidTileIDs.contains(":" + tile.getTileID() + ":")) {
 
-                boolean p1 = tile.getHitBox().contains(xValues[0] + velocityX, yValues[0] + (velocityY * 2));
-                boolean p2 = tile.getHitBox().contains(xValues[1] + velocityX, yValues[1] + (velocityY * 2));
-                boolean p3 = tile.getHitBox().contains(xValues[2] + velocityX, yValues[2] + (velocityY * 2));
-                boolean p4 = tile.getHitBox().contains(xValues[3] + velocityX, yValues[3] + (velocityY * 2));
+                boolean p1 = tile.getHitBox().contains(xValues[0] + velocityX, yValues[0] + velocityY);
+                boolean p2 = tile.getHitBox().contains(xValues[1] + velocityX, yValues[1] + velocityY);
+                boolean p3 = tile.getHitBox().contains(xValues[2] + velocityX, yValues[2] + velocityY);
+                boolean p4 = tile.getHitBox().contains(xValues[3] + velocityX, yValues[3] + velocityY);
+
+                //System.out.println("p1: " + p1 + " | p2: " + p2 + " | p3: " + p3 + " | p4: " + p4);
 
                 if (velocityY > 0 && (p3 || p4)) {
                     y = tile.getHitBox().getY() - hitBox.height - 1;
                     return false;
                 }
+
+
                 if (velocityY < 0 && (p1 || p2)) {
                     y = tile.getHitBox().getY() + hitBox.height + 1;
                     velocityY = 0;
@@ -57,21 +61,13 @@ public class Entity {
                 }
 
                 if (velocityX < 0 && (p1 || p4)) {
-                    x = tile.getHitBox().getX() + hitBox.width + 1;
+                    x = tile.getHitBox().getX() + hitBox.width ;
                     touchingWall = true;
-                    velocityX = 0;
-                    velocityY = 0;
                     return false;
                 }
-                else {
-                    touchingWall = false;
-                }
-
-                if (velocityX > 0 && (p2 || p3)) {
-                    x = tile.getHitBox().getX() - hitBox.width - 1;
+                else if (velocityX > 0 && (p2 || p3)) {
+                    x = tile.getHitBox().getX() - hitBox.width - 1 ;
                     touchingWall = true;
-                    velocityX = 0;
-                    velocityY = 0;
                     return false;
                 }
                 else {
@@ -82,20 +78,21 @@ public class Entity {
         return true;
     }
 
-    // summed up issue: the player is still touching the floor for an additional tile (48 pixels) when the player jumps also double jump
-    // touching floor works as expected 85 percent sure
-
+    // setting touchingFloor to false in the updatePosition method and can't make it work otherwise
     public void touchingFloorCheck(Tile tile, String solidTileIDs) {
         boolean height = tile.getHitBox().y == hitBox.y + hitBox.height + 1;
         boolean bottomLeft = tile.getHitBox().x <= hitBox.x && hitBox.x <= tile.getHitBox().x + tile.getHitBox().width;
         boolean bottomRight = tile.getHitBox().x <= hitBox.x + hitBox.width && hitBox.x + hitBox.width <= tile.getHitBox().x + tile.getHitBox().width;
 
-        if (height && (bottomLeft || bottomRight) ){
+        if (height && (bottomLeft || bottomRight)){
             touchingFloor = solidTileIDs.contains(":" + tile.getTileID() + ":");
-
-            //System.out.println("playery: " + hitBox.y + " | player y + height + 1: " + (hitBox.y + hitBox.height + 1) + " | tile height: " + tile.getHitBox().y + " | height: " + height + " | botleft: " + bottomLeft + " | botRight: " + bottomRight + " | toouchingfloor: " + touchingFloor + " | solid?: " + (solidTileIDs.contains(":" + tile.getTileID() + ":")) );
         }
-        //System.out.println("height: " + height + " | tile hitbox y: " + tile.getHitBox().y + " | player y: " + y + " | solid?: " + (solidTileIDs.contains(":" + tile.getTileID() + ":")));
+
+        //System.out.println("playery: " + hitBox.y + " | player y + height + 1: " + (hitBox.y + hitBox.height + 1) + " | tile height: " + tile.getHitBox().y + " | height: " + height + " | botleft: " + bottomLeft + " | botRight: " + bottomRight + " | toouchingfloor: " + touchingFloor + " | solid?: " + (solidTileIDs.contains(":" + tile.getTileID() + ":")) );
+    }
+
+    public double round(double num) {
+        return Math.round(num * Math.pow(10, 2)) / Math.pow(10,2);
     }
 
     public boolean isTouchingFloor() {
@@ -119,7 +116,7 @@ public class Entity {
     }
 
     public void setX(double x) {
-        this.x = x;
+        this.x = round(x);
     }
 
     public double getY() {
@@ -127,7 +124,7 @@ public class Entity {
     }
 
     public void setY(double y) {
-        this.y = y;
+        this.y = round(y);
     }
 
     public double getVelocityX() {
@@ -135,7 +132,7 @@ public class Entity {
     }
 
     public void setVelocityX(double velocityX) {
-        this.velocityX = velocityX;
+        this.velocityX = round(velocityX);
     }
 
     public double getVelocityY() {
@@ -143,7 +140,7 @@ public class Entity {
     }
 
     public void setVelocityY(double velocityY) {
-        this.velocityY = velocityY;
+        this.velocityY = round(velocityY);
     }
 
     public Rectangle getHitBox() {
@@ -154,3 +151,4 @@ public class Entity {
         this.hitBox = hitBox;
     }
 }
+
