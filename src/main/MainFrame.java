@@ -4,6 +4,7 @@ import entities.Player;
 import map.MapManager;
 import javax.swing.JFrame;
 import javax.swing.ImageIcon;
+import java.awt.*;
 
 public class MainFrame extends JFrame implements Runnable {
     private DrawPanel drawPanel;
@@ -35,7 +36,7 @@ public class MainFrame extends JFrame implements Runnable {
         frameHeight = numTileHeight * (tileSize * tileScale);
 
         mapManager = new MapManager("data/mapData/dungeonTileSet.png", this);
-        player = new Player(100, 100, 0, 0, this, mapManager);
+        player = new Player(100, 100, 0, 0, this, mapManager, new Rectangle(100, 100, finalTileSize, finalTileSize));
         drawPanel = new DrawPanel(player, mapManager);
         input = new Input(player);
 

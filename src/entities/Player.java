@@ -12,10 +12,8 @@ public class Player extends Entity{
     private boolean falling;
     private int jumpHeightCount;
 
-    public Player(double x, double y, double velocityX, double velocityY, MainFrame mainFrame, MapManager mapManager) {
-        super(x, y, velocityX, velocityY, mainFrame, mapManager);
-        int playerSize = mainFrame.getFinalTileSize();
-        setHitBox(new Rectangle((int) x, (int) y, playerSize, playerSize));
+    public Player(double x, double y, double velocityX, double velocityY, MainFrame mainFrame, MapManager mapManager, Rectangle hitbox) {
+        super(x, y, velocityX, velocityY, mainFrame, mapManager, hitbox);
         falling = true;
         jumpHeightCount = 0;
     }
@@ -25,25 +23,22 @@ public class Player extends Entity{
         if (isTouchingWall()) {
             setVelocityX(0);
         }
-        else if (movingLeft && collisionCheck()) {
+        else if (movingLeft) {
             moveLeft();
         }
-        else if (movingRight && collisionCheck()) {
+        else if (movingRight) {
             moveRight();
         }
-
 
         if (isTouchingWall() && getHitBox().y != 575) {
             sliding();
         }
 
 
-
-        if (jumping && collisionCheck()) {
+        if (jumping) {
             jump(144);
 
         }
-
 
 
         if ((!isTouchingFloor() && !jumping && !isTouchingWall()) || isTouchingCeiling()) {
@@ -54,8 +49,7 @@ public class Player extends Entity{
             falling = false;
         }
 
-
-        if (falling && collisionCheck()) {
+        if (falling) {
             freeFall();
         }
     }
@@ -105,6 +99,8 @@ public class Player extends Entity{
     }
 
     public void update() {
+        updateCollisionPoints();
+        updateCollisionConstants();
         updatePosition();
     }
 

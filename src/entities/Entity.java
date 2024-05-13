@@ -4,78 +4,96 @@ import main.MainFrame;
 import map.MapManager;
 import map.Tile;
 import java.awt.Rectangle;
+import java.awt.Point;
 
 public class Entity {
-    private Rectangle hitBox;
     private MainFrame mainFrame;
     private MapManager mapManager;
+    private Rectangle hitBox;
+
     private double x;
     private double y;
     private double velocityX;
     private double velocityY;
+
     private boolean touchingFloor;
     private boolean touchingCeiling;
     private boolean touchingWall;
 
-    public Entity(double x, double y, double velocityX, double velocityY, MainFrame mainFrame, MapManager mapManager) {
+    private Point topLeft;
+    private Point topRight;
+    private Point botRight;
+    private Point botLeft;
+
+    private boolean p1;
+    private boolean p2;
+    private boolean p3;
+    private boolean p4;
+
+    public Entity(double x, double y, double velocityX, double velocityY, MainFrame mainFrame, MapManager mapManager, Rectangle hitBox) {
+        this.mainFrame = mainFrame;
+        this.mapManager = mapManager;
+        this.hitBox = hitBox;
+
         this.x = x;
         this.y = y;
         this.velocityX = velocityX;
         this.velocityY = velocityY;
-        this.mainFrame = mainFrame;
-        this.mapManager = mapManager;
+
+        topLeft = new Point(hitBox.x, hitBox.y);
+        topRight = new Point(hitBox.x + hitBox.width, hitBox.y);
+        botRight = new Point(hitBox.x + hitBox.width, hitBox.y + hitBox.height);
+        botLeft = new Point(hitBox.x, hitBox.y + hitBox.height);
+
+        p1 = false;
+        p2 = false;
+        p3 = false;
+        p4 = false;
     }
 
-    public boolean collisionCheck() {
-        double[] xValues = new double[]{hitBox.x, hitBox.x + hitBox.width, hitBox.x + hitBox.width, hitBox.x};
-        double[] yValues = new double[]{hitBox.y, hitBox.y, hitBox.y + hitBox.height, hitBox.y + hitBox.height};
-        Tile[] collisionArr = mapManager.getCollisionArr();
+    public void updateCollisionPoints() {
+        topLeft.setLocation(topLeft.getX() + velocityX, topLeft.getY() + velocityY);
+        topRight.setLocation(topRight.getX() + velocityX, topRight.getY() + velocityY);
+        botRight.setLocation(botRight.getX() + velocityX, botRight.getY() + velocityY);
+        botLeft.setLocation(botLeft.getX() + velocityX, botLeft.getY() + velocityY);
+
         String solidTileIDs = ":16:17:18:20:21:31:32:33:35:36:46:47:48:50:51:76:77:78:91:92:93:106:107:108:";
-
-        for (Tile tile : collisionArr) {
+        for (Tile tile : mapManager.getCollisionArr()) {
             touchingFloorCheck(tile, solidTileIDs);
-
             if (solidTileIDs.contains(":" + tile.getTileID() + ":")) {
-
-                boolean p1 = tile.getHitBox().contains(xValues[0] + velocityX, yValues[0] + velocityY);
-                boolean p2 = tile.getHitBox().contains(xValues[1] + velocityX, yValues[1] + velocityY);
-                boolean p3 = tile.getHitBox().contains(xValues[2] + velocityX, yValues[2] + velocityY);
-                boolean p4 = tile.getHitBox().contains(xValues[3] + velocityX, yValues[3] + velocityY);
-
-                //System.out.println("p1: " + p1 + " | p2: " + p2 + " | p3: " + p3 + " | p4: " + p4);
-
-                if (velocityY > 0 && (p3 || p4)) {
-                    y = tile.getHitBox().getY() - hitBox.height - 1;
-                    return false;
-                }
-
-
-                if (velocityY < 0 && (p1 || p2)) {
-                    y = tile.getHitBox().getY() + hitBox.height + 1;
-                    velocityY = 0;
-                    touchingCeiling = true;
-                    return false;
-                }
-                else {
-                    touchingCeiling = false;
-                }
-
-                if (velocityX < 0 && (p1 || p4)) {
-                    x = tile.getHitBox().getX() + hitBox.width ;
-                    touchingWall = true;
-                    return false;
-                }
-                else if (velocityX > 0 && (p2 || p3)) {
-                    x = tile.getHitBox().getX() - hitBox.width - 1 ;
-                    touchingWall = true;
-                    return false;
-                }
-                else {
-                    touchingWall = false;
-                }
+                p1 = tile.getHitBox().contains(topLeft.getX() + velocityX, topLeft.getY() + velocityY);
+                p2 = tile.getHitBox().contains(topRight.getX() + velocityX, topRight.getY() + velocityY);
+                p3 = tile.getHitBox().contains(botRight.getX() + velocityX, botRight.getY() + velocityY);
+                p4 = tile.getHitBox().contains(botLeft.getX() + velocityX, botLeft.getY() + velocityY);
             }
         }
-        return true;
+    }
+
+    public void updateCollisionConstants() {
+        if (velocityY > 0 && (p3 || p4)) {
+            y = botLeft.getY() - hitBox.height - 1;
+        }
+
+        if (velocityY < 0 && (p1 || p2)) {
+            y = topLeft.getY() + hitBox.height + 1;
+            velocityY = 0;
+            touchingCeiling = true;
+        }
+        else {
+            touchingCeiling = false;
+        }
+
+        if (velocityX < 0 && (p1 || p4)) {
+            x = topLeft.getX() + hitBox.width ;
+            touchingWall = true;
+        }
+        else if (velocityX > 0 && (p2 || p3)) {
+            x = topRight.getX() - hitBox.width - 1 ;
+            touchingWall = true;
+        }
+        else {
+            touchingWall = false;
+        }
     }
 
     // setting touchingFloor to false in the updatePosition method and can't make it work otherwise
