@@ -18,4 +18,8 @@ public class Tile {
     public int getTileID() {
         return tileID;
     }
+
+    public String toString() {
+        return "x: " + hitBox.getX() + " | y: " + hitBox.getY() + " | ID: " + tileID;
+    }
 }

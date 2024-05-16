@@ -6,15 +6,11 @@ import java.awt.Rectangle;
 import java.awt.Graphics;
 
 public class Player extends Entity{
-    private boolean movingLeft;
-    private boolean movingRight;
-    private boolean jumping;
-    private boolean falling;
     private int jumpHeightCount;
 
     public Player(double x, double y, double velocityX, double velocityY, MainFrame mainFrame, MapManager mapManager, Rectangle hitbox) {
         super(x, y, velocityX, velocityY, mainFrame, mapManager, hitbox);
-        falling = true;
+        setFalling(true);
         jumpHeightCount = 0;
     }
 
@@ -23,10 +19,10 @@ public class Player extends Entity{
         if (isTouchingWall()) {
             setVelocityX(0);
         }
-        else if (movingLeft) {
+        else if (isMovingLeft()) {
             moveLeft();
         }
-        else if (movingRight) {
+        else if (isMovingRight()) {
             moveRight();
         }
 
@@ -35,21 +31,21 @@ public class Player extends Entity{
         }
 
 
-        if (jumping) {
+        if (isJumping()) {
             jump(144);
 
         }
 
 
-        if ((!isTouchingFloor() && !jumping && !isTouchingWall()) || isTouchingCeiling()) {
-            falling = true;
+        if ((!isTouchingFloor() && !isJumping() && !isTouchingWall()) || isTouchingCeiling()) {
+            setFalling(true);
         }
         else {
             setVelocityY(0);
-            falling = false;
+            setFalling(false);
         }
 
-        if (falling) {
+        if (isFalling()) {
             freeFall();
         }
     }
@@ -70,11 +66,11 @@ public class Player extends Entity{
         jumpHeightCount += (int) getVelocityY();
         setTouchingFloor(false);
         if (jumpHeightCount + getVelocityY() < -limit) {
-            jumping = false;
+            setJumping(false);
             jumpHeightCount = 0;
         }
         if (isTouchingCeiling()) {
-            jumping = false;
+            setJumping(false);
         }
     }
 
@@ -102,21 +98,5 @@ public class Player extends Entity{
         updateCollisionPoints();
         updateCollisionConstants();
         updatePosition();
-    }
-
-    public void setJumping(boolean jumping) {
-        this.jumping = jumping;
-    }
-
-    public boolean isJumping() {
-        return jumping;
-    }
-
-    public void setMovingLeft(boolean movingLeft) {
-        this.movingLeft = movingLeft;
-    }
-
-    public void setMovingRight(boolean movingRight) {
-        this.movingRight = movingRight;
     }
 }
