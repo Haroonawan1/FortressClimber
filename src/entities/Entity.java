@@ -5,6 +5,7 @@ import map.MapManager;
 import map.Tile;
 import java.awt.Rectangle;
 import java.awt.Point;
+import java.util.ArrayList;
 
 public class Entity {
     private MainFrame mainFrame;
@@ -29,6 +30,7 @@ public class Entity {
     private boolean p2;
     private boolean p3;
     private boolean p4;
+    private ArrayList<Tile> collidingTiles;
 
     private boolean movingLeft;
     private boolean movingRight;
@@ -54,6 +56,7 @@ public class Entity {
         p2 = false;
         p3 = false;
         p4 = false;
+        collidingTiles = new ArrayList<>();
 
         movingLeft = false;
         movingRight = false;
@@ -69,7 +72,6 @@ public class Entity {
 
         String solidTileIDs = ":16:17:18:20:21:31:32:33:35:36:46:47:48:50:51:76:77:78:91:92:93:106:107:108:";
         for (Tile tile : mapManager.getCollisionArr()) {
-            //touchingFloorCheck(tile, solidTileIDs);
             if (solidTileIDs.contains(":" + tile.getTileID() + ":")) {
                 p1 = tile.getHitBox().contains(topLeft.getX() + velocityX, topLeft.getY() + velocityY);
                 p2 = tile.getHitBox().contains(topRight.getX() + velocityX, topRight.getY() + velocityY);
@@ -77,22 +79,48 @@ public class Entity {
                 p4 = tile.getHitBox().contains(botLeft.getX() + velocityX, botLeft.getY() + velocityY);
 
                 if (p1 || p2 || p3 || p4) {
-                    System.out.println(tile + " | p1: " + p1 + " p2: " + p2  + " p3: " + p3 + " p4: " + p4 );
-                    break;
-
+                    collidingTiles.add(tile);
+                    tile.setOutLined(true);
+                    //break;
                 }
+
             }
         }
+
+        p1 = false;
+        p2 = false;
+        p3 = false;
+        p4 = false;
+
+        //System.out.println(collidingTiles);
+        for (Tile tile : collidingTiles) {
+            if (tile.getHitBox().contains(topLeft.getX() + velocityX, topLeft.getY() + velocityY)) {
+                p1 = true;
+            }
+            if (tile.getHitBox().contains(topRight.getX() + velocityX, topRight.getY() + velocityY)) {
+                p2 = true;
+            }
+            if (tile.getHitBox().contains(botRight.getX() + velocityX, botRight.getY() + velocityY)) {
+                p3 = true;
+            }
+            if (tile.getHitBox().contains(botLeft.getX() + velocityX, botLeft.getY() + velocityY)) {
+                p4 = true;
+            }
+        }
+
+        //System.out.println("p1: " + p1 + " p2: " + p2  + " p3: " + p3 + " p4: " + p4);
+        //System.out.println("jumping: " + jumping + " | falling: " + falling +  " | playerx: " + x  + " | playery: " + y + " | touchingWall: " + touchingWall + " | velx: " + velocityX + " | vely: " + velocityY);
     }
 
     public void updateCollisionConstants() {
+        System.out.println(collidingTiles);
 
-        if ((p3 || p4) && falling) {
+        if (p3 || p4) {
+            y = collidingTiles.getFirst().getHitBox().getY() - hitBox.height;
             touchingFloor = true;
-            y = botLeft.getY() - hitBox.height - 1;
         }
-        else if ((p1 || p2) && jumping) {
-            y = topLeft.getY() + hitBox.height + 1;
+        else if (p1 || p2) {
+            y = collidingTiles.getFirst().getHitBox().getY() + hitBox.height;
             velocityY = 0;
             touchingCeiling = true;
         }
@@ -102,16 +130,40 @@ public class Entity {
         }
 
 
-        if ((p1 || p4) && movingLeft) {
-            x = topLeft.getX() + hitBox.width;
+        if ((p1 && p4) && movingLeft) {
+            double smallestX = collidingTiles.getFirst().getHitBox().getX();
+            for (Tile tile: collidingTiles) {
+                if (tile.getHitBox().getX() < smallestX) {
+                    smallestX = tile.getHitBox().getX();
+                }
+            }
+
+            x = smallestX + hitBox.height;
             touchingWall = true;
         }
-        else if ((p2 || p3) && movingRight) {
-            x = topRight.getX() - hitBox.width;
+        else if ((p2 && p3) && movingRight) {
+            double largestX = collidingTiles.getFirst().getHitBox().getX();
+            for (Tile tile: collidingTiles) {
+                if (tile.getHitBox().getX() > largestX) {
+                    largestX = tile.getHitBox().getX();
+                }
+            }
+
+            x = largestX - hitBox.height;
             touchingWall = true;
         }
         else {
             touchingWall = false;
+        }
+
+        emptyCollidingTiles();
+    }
+
+
+    public void emptyCollidingTiles() {
+        for (int i = 0; i < collidingTiles.size(); i++) {
+            collidingTiles.remove(i);
+            i--;
         }
     }
 

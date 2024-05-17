@@ -2,6 +2,8 @@ package main;
 
 import entities.Player;
 import map.MapManager;
+import map.Tile;
+
 import javax.swing.JPanel;
 import java.awt.Graphics;
 import java.awt.Color;
@@ -18,8 +20,15 @@ public class DrawPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         this.setBackground(Color.BLACK);
-        g.setColor(Color.red);
+        g.setColor(Color.blue);
         mapManager.drawMap(g, "data/mapData/map1");
+        for (Tile tile : mapManager.getCollisionArr()) {
+            if (tile.isOutLined()) {
+                g.fillRect(tile.getHitBox().x, tile.getHitBox().y, tile.getHitBox().width, tile.getHitBox().height);
+            }
+            tile.setOutLined(false);
+        }
+        g.setColor(Color.red);
         player.draw(g);
     }
 }

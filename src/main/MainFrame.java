@@ -47,7 +47,7 @@ public class MainFrame extends JFrame implements Runnable {
         this.setIconImage(new ImageIcon("data/miscData/fortressIcon.png").getImage());
         // not sure why I need to add these
         this.setSize(frameWidth + 14, frameHeight + 38);
-        this.setLocation(300, 200);
+        this.setLocation(500, 200);
         this.setResizable(false);
         this.setVisible(true);
 

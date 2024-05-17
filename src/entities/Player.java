@@ -16,7 +16,7 @@ public class Player extends Entity{
 
     public void updatePosition() {
 
-        if (isTouchingWall()) {
+        if (isTouchingWall() || (!isMovingLeft() && !isMovingRight())) {
             setVelocityX(0);
         }
         else if (isMovingLeft()) {
@@ -26,15 +26,10 @@ public class Player extends Entity{
             moveRight();
         }
 
-        if (isTouchingWall() && getHitBox().y != 575) {
+        if (isTouchingWall()) {
             sliding();
         }
 
-
-        if (isJumping()) {
-            jump(144);
-
-        }
 
 
         if ((!isTouchingFloor() && !isJumping() && !isTouchingWall()) || isTouchingCeiling()) {
@@ -43,6 +38,10 @@ public class Player extends Entity{
         else {
             setVelocityY(0);
             setFalling(false);
+        }
+
+        if (isJumping()) {
+            jump(144);
         }
 
         if (isFalling()) {
@@ -64,7 +63,7 @@ public class Player extends Entity{
         setVelocityY(-4);
         setY(getY() + getVelocityY());
         jumpHeightCount += (int) getVelocityY();
-        setTouchingFloor(false);
+        //setTouchingFloor(false);
         if (jumpHeightCount + getVelocityY() < -limit) {
             setJumping(false);
             jumpHeightCount = 0;
