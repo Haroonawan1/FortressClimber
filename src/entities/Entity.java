@@ -4,27 +4,28 @@ import main.MainFrame;
 import map.MapManager;
 import map.Tile;
 import java.awt.Rectangle;
-import java.awt.Point;
 import java.util.ArrayList;
 
 public class Entity {
     private MainFrame mainFrame;
     private MapManager mapManager;
-    private Rectangle hitBox;
+    private Rectangle hitBox;   
 
     private double x;
     private double y;
     private double velocityX;
     private double velocityY;
 
+    // going to use these later
+    private double maxSpeedX;
+    private double maxSpeedY;
+    private double accelerationX;
+    private double accelerationY;
+
     private boolean touchingFloor;
     private boolean touchingCeiling;
-    private boolean touchingWall;
-
-    private Point topLeft;
-    private Point topRight;
-    private Point botRight;
-    private Point botLeft;
+    private boolean touchingWallRight;
+    private boolean touchingWallLeft;
 
     private boolean p1;
     private boolean p2;
@@ -34,6 +35,7 @@ public class Entity {
 
     private boolean movingLeft;
     private boolean movingRight;
+    private boolean movingDown;
     private boolean falling;
     private boolean jumping;
 
@@ -46,11 +48,6 @@ public class Entity {
         this.y = y;
         this.velocityX = velocityX;
         this.velocityY = velocityY;
-
-        topLeft = new Point(hitBox.x, hitBox.y);
-        topRight = new Point(hitBox.x + hitBox.width, hitBox.y);
-        botRight = new Point(hitBox.x + hitBox.width, hitBox.y + hitBox.height);
-        botLeft = new Point(hitBox.x, hitBox.y + hitBox.height);
 
         p1 = false;
         p2 = false;
@@ -65,25 +62,19 @@ public class Entity {
     }
 
     public void updateCollisionPoints() {
-        topLeft.setLocation(topLeft.getX() + velocityX, topLeft.getY() + velocityY);
-        topRight.setLocation(topRight.getX() + velocityX, topRight.getY() + velocityY);
-        botRight.setLocation(botRight.getX() + velocityX, botRight.getY() + velocityY);
-        botLeft.setLocation(botLeft.getX() + velocityX, botLeft.getY() + velocityY);
 
         String solidTileIDs = ":16:17:18:20:21:31:32:33:35:36:46:47:48:50:51:76:77:78:91:92:93:106:107:108:";
         for (Tile tile : mapManager.getCollisionArr()) {
             if (solidTileIDs.contains(":" + tile.getTileID() + ":")) {
-                p1 = tile.getHitBox().contains(topLeft.getX() + velocityX, topLeft.getY() + velocityY);
-                p2 = tile.getHitBox().contains(topRight.getX() + velocityX, topRight.getY() + velocityY);
-                p3 = tile.getHitBox().contains(botRight.getX() + velocityX, botRight.getY() + velocityY);
-                p4 = tile.getHitBox().contains(botLeft.getX() + velocityX, botLeft.getY() + velocityY);
+                p1 = tile.getHitBox().contains(hitBox.getX() + velocityX, hitBox.getY() + velocityY);
+                p2 = tile.getHitBox().contains(hitBox.getX() + hitBox.width + velocityX, hitBox.getY() + velocityY);
+                p3 = tile.getHitBox().contains(hitBox.getX() + hitBox.width + velocityX, hitBox.getY() + hitBox.height + velocityY);
+                p4 = tile.getHitBox().contains(hitBox.getX() + velocityX, hitBox.getY() + hitBox.height + velocityY);
 
                 if (p1 || p2 || p3 || p4) {
                     collidingTiles.add(tile);
                     tile.setOutLined(true);
-                    //break;
                 }
-
             }
         }
 
@@ -94,34 +85,45 @@ public class Entity {
 
         //System.out.println(collidingTiles);
         for (Tile tile : collidingTiles) {
-            if (tile.getHitBox().contains(topLeft.getX() + velocityX, topLeft.getY() + velocityY)) {
+            if (tile.getHitBox().contains(hitBox.getX() + velocityX, hitBox.getY() + velocityY)) {
                 p1 = true;
             }
-            if (tile.getHitBox().contains(topRight.getX() + velocityX, topRight.getY() + velocityY)) {
+            if (tile.getHitBox().contains(hitBox.getX() + hitBox.width + velocityX, hitBox.getY() + velocityY)) {
                 p2 = true;
             }
-            if (tile.getHitBox().contains(botRight.getX() + velocityX, botRight.getY() + velocityY)) {
+            if (tile.getHitBox().contains(hitBox.getX() + hitBox.width + velocityX, hitBox.getY() + hitBox.height + velocityY)) {
                 p3 = true;
             }
-            if (tile.getHitBox().contains(botLeft.getX() + velocityX, botLeft.getY() + velocityY)) {
+            if (tile.getHitBox().contains(hitBox.getX() + velocityX, hitBox.getY() + hitBox.height + velocityY)) {
                 p4 = true;
             }
         }
 
-        //System.out.println("p1: " + p1 + " p2: " + p2  + " p3: " + p3 + " p4: " + p4);
-        //System.out.println("jumping: " + jumping + " | falling: " + falling +  " | playerx: " + x  + " | playery: " + y + " | touchingWall: " + touchingWall + " | velx: " + velocityX + " | vely: " + velocityY);
+        //System.out.println(botLeft.getX() + " , " + botLeft.getY());
+        //System.out.print("p1: " + p1 + " p2: " + p2  + " p3: " + p3 + " p4: " + p4 );
+        System.out.println(" | touchingCeiling: " + touchingCeiling + " | falling: " + falling +  " | playerx: " + x  + " | playery: " + y + " | touchingWallR: " + touchingWallRight + " | touchingwallL: " + touchingWallLeft + " | velx: " + velocityX + " | vely: " + velocityY + " | touchfloor: " + touchingFloor + " | movingleft: " + movingLeft);
     }
 
     public void updateCollisionConstants() {
-        System.out.println(collidingTiles);
+        //System.out.println(collidingTiles);
 
-        if (p3 || p4) {
-            y = collidingTiles.getFirst().getHitBox().getY() - hitBox.height;
+        if (((p3 || p4) && (!touchingWallRight && !touchingWallLeft)) || ((p1 || p2) && (p3 && p4))) {
+            double biggestY = collidingTiles.getFirst().getHitBox().getY();
+            for (Tile tile: collidingTiles) {
+                if (tile.getHitBox().getY() > biggestY) {
+                    biggestY = tile.getHitBox().getY();
+                }
+            }
+
+            y = biggestY - hitBox.height;
             touchingFloor = true;
+            touchingCeiling = false;
         }
-        else if (p1 || p2) {
-            y = collidingTiles.getFirst().getHitBox().getY() + hitBox.height;
+        else if ((p1 || p2) && (!touchingWallRight && !touchingWallLeft) && !movingDown) {
             velocityY = 0;
+
+            y = collidingTiles.getFirst().getHitBox().getY() + hitBox.height;
+            touchingFloor = false;
             touchingCeiling = true;
         }
         else {
@@ -130,7 +132,7 @@ public class Entity {
         }
 
 
-        if ((p1 && p4) && movingLeft) {
+        if (p1 && p4) {
             double smallestX = collidingTiles.getFirst().getHitBox().getX();
             for (Tile tile: collidingTiles) {
                 if (tile.getHitBox().getX() < smallestX) {
@@ -138,10 +140,10 @@ public class Entity {
                 }
             }
 
-            x = smallestX + hitBox.height;
-            touchingWall = true;
+            x = smallestX + hitBox.width;
+            touchingWallLeft = true;
         }
-        else if ((p2 && p3) && movingRight) {
+        else if ((p2 && p3)) {
             double largestX = collidingTiles.getFirst().getHitBox().getX();
             for (Tile tile: collidingTiles) {
                 if (tile.getHitBox().getX() > largestX) {
@@ -149,35 +151,23 @@ public class Entity {
                 }
             }
 
-            x = largestX - hitBox.height;
-            touchingWall = true;
+            x = largestX - hitBox.width;
+            touchingWallRight = true;
         }
         else {
-            touchingWall = false;
+            touchingWallLeft = false;
+            touchingWallRight = false;
         }
+
 
         emptyCollidingTiles();
     }
-
 
     public void emptyCollidingTiles() {
         for (int i = 0; i < collidingTiles.size(); i++) {
             collidingTiles.remove(i);
             i--;
         }
-    }
-
-    // setting touchingFloor to false in the updatePosition method and can't make it work otherwise
-    public void touchingFloorCheck(Tile tile, String solidTileIDs) {
-        boolean height = tile.getHitBox().y == hitBox.y + hitBox.height + 1;
-        boolean bottomLeft = tile.getHitBox().x <= hitBox.x && hitBox.x <= tile.getHitBox().x + tile.getHitBox().width;
-        boolean bottomRight = tile.getHitBox().x <= hitBox.x + hitBox.width && hitBox.x + hitBox.width <= tile.getHitBox().x + tile.getHitBox().width;
-
-        if (height && (bottomLeft || bottomRight)){
-            touchingFloor = solidTileIDs.contains(":" + tile.getTileID() + ":");
-        }
-
-        //System.out.println("playery: " + hitBox.y + " | player y + height + 1: " + (hitBox.y + hitBox.height + 1) + " | tile height: " + tile.getHitBox().y + " | height: " + height + " | botleft: " + bottomLeft + " | botRight: " + bottomRight + " | toouchingfloor: " + touchingFloor + " | solid?: " + (solidTileIDs.contains(":" + tile.getTileID() + ":")) );
     }
 
     public double round(double num) {
@@ -196,8 +186,20 @@ public class Entity {
         return touchingCeiling;
     }
 
-    public boolean isTouchingWall() {
-        return touchingWall;
+    public boolean isTouchingWallRight() {
+        return touchingWallRight;
+    }
+
+    public boolean isTouchingWallLeft() {
+        return touchingWallLeft;
+    }
+
+    public void setTouchingWallLeft(boolean touchingWallLeft) {
+        this.touchingWallLeft = touchingWallLeft;
+    }
+
+    public void setTouchingWallRight(boolean touchingWallRight) {
+        this.touchingWallRight = touchingWallRight;
     }
 
     public double getX() {
@@ -254,6 +256,14 @@ public class Entity {
 
     public void setMovingRight(boolean movingRight) {
         this.movingRight = movingRight;
+    }
+
+    public boolean isMovingDown() {
+        return movingDown;
+    }
+
+    public void setMovingDown(boolean movingDown) {
+        this.movingDown = movingDown;
     }
 
     public boolean isFalling() {

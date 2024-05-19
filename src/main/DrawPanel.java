@@ -28,7 +28,6 @@ public class DrawPanel extends JPanel {
             }
             tile.setOutLined(false);
         }
-        g.setColor(Color.red);
         player.draw(g);
     }
 }
