@@ -7,9 +7,12 @@ import java.awt.Graphics;
 import java.awt.Color;
 
 public class Player extends Entity{
-    private double jumpHeightCount;
     private boolean sliding;
+
+    private double jumpHeightCount;
+    private double superJumpCount;
     private boolean shouldWallJump;
+    private boolean shouldSuperJump;
 
     public Player(double x, double y, double velocityX, double velocityY, MainFrame mainFrame, MapManager mapManager, Rectangle hitbox) {
         super(x, y, velocityX, velocityY, mainFrame, mapManager, hitbox);
@@ -18,7 +21,20 @@ public class Player extends Entity{
         shouldWallJump = false;
     }
 
+    //movingLeft && movingRight lets you jump vertically up walls!
+
     public void updatePosition() {
+        if (isMovingDown() && !(isMovingRight() || isMovingLeft())) {
+            superJumpCount += 1;
+            if (superJumpCount > 150) {
+                shouldSuperJump = true;
+            }
+        }
+        if (shouldSuperJump) {
+            jump(144, 4);
+            superJumpCount = 0;
+        }
+
 
         if (((isTouchingWallRight() && isMovingRight()) || (isTouchingWallLeft() && isMovingLeft())) && !isTouchingFloor()) {
             setVelocityX(0);
@@ -28,19 +44,19 @@ public class Player extends Entity{
         }
         else if (isMovingLeft() && isTouchingWallRight() && sliding) {
             if (isJumping()) {
-                moveLeft(2, 0.1);
+                moveLeft(2, 0.2);
             }
         }
         else if (isMovingRight() && isTouchingWallLeft() && sliding) {
             if (isJumping()) {
-                moveRight(2, 0.1);
+                moveRight(2, 0.2);
             }
         }
         else if (isMovingLeft() && !isTouchingWallLeft()) {
-            moveLeft(2, 0.1);
+            moveLeft(2, 0.2);
         }
         else if (isMovingRight() && !isTouchingWallRight()) {
-            moveRight(2, 0.1);
+            moveRight(2, 0.2);
         }
 
 
@@ -50,7 +66,9 @@ public class Player extends Entity{
             freeFall();
         }
         else {
-            setVelocityY(0);
+            if (!sliding) {
+                setVelocityY(0);
+            }
             setFalling(false);
         }
 
@@ -72,20 +90,19 @@ public class Player extends Entity{
             if ((isMovingRight() && !isTouchingWallRight()) || (isMovingLeft() && !isTouchingWallLeft())) {
                 jump(48, 4);
             }
-
         }
         else if (isJumping()) {
-            jump(144, 4);
+            jump(96, 4);
         }
     }
 
     public void stop() {
         if (getVelocityX() != 0) {
             if (getVelocityX() < 0) {
-                setVelocityX(getVelocityX() + 0.1);
+                setVelocityX(getVelocityX() + 0.2);
             }
             if (getVelocityX() > 0) {
-                setVelocityX(getVelocityX() - 0.1);
+                setVelocityX(getVelocityX() - 0.2);
             }
         }
 
@@ -122,6 +139,7 @@ public class Player extends Entity{
         if (jumpHeightCount + getVelocityY() < -jumpHeightLimit) {
             setJumping(false);
             jumpHeightCount = 0;
+            shouldSuperJump = false;
         }
         if (isTouchingCeiling()) {
             setVelocityY(0);
@@ -136,13 +154,14 @@ public class Player extends Entity{
 
 
     public void slide() {
-        setVelocityY(getVelocityY() + 0.1);
+        setVelocityY(getVelocityY() + 0.01);
         setY(getY() + getVelocityY());
     }
 
     public void draw(Graphics g) {
         //System.out.println("canSlide: " + canSlide() + " | touchingfloor: " + isTouchingFloor() + " | velx: " + getVelocityX() +  " | vely: " + getVelocityY());
         //System.out.println("x: " + getX() + " | y: " + getY() + " | hitboxX: " + getHitBox().x + " | hitboxY: " + getHitBox().y +  " | xvel: " + getVelocityX() + " | yvel: " + getVelocityY() + " | left: " + isMovingLeft() + " | right: " + isMovingRight() + " | down: " + isMovingDown());
+        //System.out.println("x: " + getX() + " | y: " + getY() +  " | xvel: " + getVelocityX() + " | yvel: " + getVelocityY() + " | superjumpcount: " + superJumpCount + " | should shuperjump : " + shouldSuperJump);
         getHitBox().x = (int) getX();
         getHitBox().y = (int) getY();
 
