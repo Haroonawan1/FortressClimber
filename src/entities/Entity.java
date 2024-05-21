@@ -24,6 +24,7 @@ public class Entity {
 
     private boolean touchingFloor;
     private boolean touchingCeiling;
+    private boolean touchingCorner;
     private boolean touchingWallRight;
     private boolean touchingWallLeft;
 
@@ -98,11 +99,14 @@ public class Entity {
         }
 
         //System.out.println(botLeft.getX() + " , " + botLeft.getY());
-        //System.out.print("   p1: " + p1 + " p2: " + p2  + " p3: " + p3 + " p4: " + p4 );
+        //System.out.print("   p1: " + p1 + " p2: " + p2  + " p3: " + p3 + " p4: " + p4 + " ");
         //System.out.println(" | falling: " + falling +  " | x: " + x  + " | y: " + y + " | velx: " + velocityX + " | vely: " + velocityY + " | wallRight: " + touchingWallRight + " | floor: " + touchingFloor + " | movingleft: " + movingLeft);
     }
 
     public void updateCollisionConstants() {
+
+        touchingCorner = (p1 && p4 && (p2 || p3)) || (p2 && p3 && (p1 || p4));
+
         if (p1 && p4) {
             double smallestX = collidingTiles.get(0).getHitBox().getX();
             for (Tile tile: collidingTiles) {
@@ -128,10 +132,10 @@ public class Entity {
             x = largestX - hitBox.width;
             touchingWallRight = true;
         }
-        else if (isTouchingWallRight() && (p2 || p3)) {
+        else if (isTouchingWallRight() && (p2 || p3) && !touchingFloor) {
             touchingWallRight = true;
         }
-        else if (isTouchingWallLeft() && (p1 || p4)) {
+        else if (isTouchingWallLeft() && (p1 || p4) && !touchingFloor) {
             touchingWallLeft = true;
         }
         else {
@@ -163,6 +167,8 @@ public class Entity {
             touchingFloor = false;
             touchingCeiling = false;
         }
+
+
 
         emptyCollidingTiles();
     }
@@ -268,6 +274,14 @@ public class Entity {
 
     public void setMovingDown(boolean movingDown) {
         this.movingDown = movingDown;
+    }
+
+    public boolean isTouchingCorner() {
+        return touchingCorner;
+    }
+
+    public void setTouchingCorner(boolean touchingCorner) {
+        this.touchingCorner = touchingCorner;
     }
 
     public boolean isFalling() {

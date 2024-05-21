@@ -8,6 +8,7 @@ import java.awt.Color;
 
 public class Player extends Entity{
     private boolean sliding;
+    private boolean touchedCorner;
 
     private double jumpHeightCount;
     private double superJumpCount;
@@ -21,18 +22,9 @@ public class Player extends Entity{
         shouldWallJump = false;
     }
 
-    //movingLeft && movingRight lets you jump vertically up walls!
-
     public void updatePosition() {
-        if (isMovingDown() && !(isMovingRight() || isMovingLeft())) {
-            superJumpCount += 1;
-            if (superJumpCount > 150) {
-                shouldSuperJump = true;
-            }
-        }
-        if (shouldSuperJump) {
-            jump(144, 4);
-            superJumpCount = 0;
+        if (isTouchingCorner()) {
+            touchedCorner = true;
         }
 
 
@@ -73,7 +65,7 @@ public class Player extends Entity{
         }
 
 
-        if ((isTouchingWallRight() || isTouchingWallLeft()) && !isTouchingFloor() && !isMovingDown()) {
+        if ((isTouchingWallRight() || isTouchingWallLeft()) && !isTouchingFloor() && !isMovingDown() && !touchedCorner) {
             sliding = true;
             slide();
         }
@@ -82,18 +74,34 @@ public class Player extends Entity{
         }
 
 
-        if (isTouchingWallRight() || isTouchingWallLeft()) {
+        if (isMovingDown()) {
+            superJumpCount += 1;
+            if (superJumpCount > 150) {
+                shouldSuperJump = true;
+            }
+        }
+        else {
+            superJumpCount = 0;
+        }
+        if (shouldSuperJump) {
+            jump(144, 4);
+            superJumpCount = 0;
+        }
+
+        if ((isTouchingWallRight() || isTouchingWallLeft()) && !touchedCorner) {
             shouldWallJump = true;
         }
 
         if (isJumping() && shouldWallJump) {
-            if ((isMovingRight() && !isTouchingWallRight()) || (isMovingLeft() && !isTouchingWallLeft())) {
+            if (((isMovingRight() && !isTouchingWallRight()) || (isMovingLeft() && !isTouchingWallLeft())) && !(isMovingRight() && isMovingLeft())) {
                 jump(48, 4);
             }
         }
-        else if (isJumping()) {
+        else if (isJumping() && !isMovingDown()) {
             jump(96, 4);
         }
+
+        System.out.println( " | R : " + isMovingRight() );
     }
 
     public void stop() {
