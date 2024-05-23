@@ -28,7 +28,7 @@ public class Player extends Entity{
         }
 
 
-        if (((isTouchingWallRight() && isMovingRight()) || (isTouchingWallLeft() && isMovingLeft())) && !isTouchingFloor()) {
+        if ((((isTouchingWallRight() && isMovingRight()) || (isTouchingWallLeft() && isMovingLeft())) && !isTouchingFloor()) || (isMovingDown() && isTouchingFloor())) {
             setVelocityX(0);
         }
         else if ((!isMovingRight() && !isMovingLeft())) {
@@ -83,7 +83,7 @@ public class Player extends Entity{
         else {
             superJumpCount = 0;
         }
-        if (shouldSuperJump) {
+        if (shouldSuperJump && !isTouchingCeiling()) {
             jump(144, 4);
             superJumpCount = 0;
         }
@@ -101,7 +101,6 @@ public class Player extends Entity{
             jump(96, 4);
         }
 
-        System.out.println( " | R : " + isMovingRight() );
     }
 
     public void stop() {
@@ -168,7 +167,7 @@ public class Player extends Entity{
 
     public void draw(Graphics g) {
         //System.out.println("canSlide: " + canSlide() + " | touchingfloor: " + isTouchingFloor() + " | velx: " + getVelocityX() +  " | vely: " + getVelocityY());
-        //System.out.println("x: " + getX() + " | y: " + getY() + " | hitboxX: " + getHitBox().x + " | hitboxY: " + getHitBox().y +  " | xvel: " + getVelocityX() + " | yvel: " + getVelocityY() + " | left: " + isMovingLeft() + " | right: " + isMovingRight() + " | down: " + isMovingDown());
+        System.out.println("x: " + getX() + " | y: " + getY() + " | hitboxX: " + getHitBox().x + " | hitboxY: " + getHitBox().y +  " | xvel: " + getVelocityX() + " | yvel: " + getVelocityY() + " | left: " + isMovingLeft() + " | right: " + isMovingRight() + " | down: " + isMovingDown());
         //System.out.println("x: " + getX() + " | y: " + getY() +  " | xvel: " + getVelocityX() + " | yvel: " + getVelocityY() + " | superjumpcount: " + superJumpCount + " | should shuperjump : " + shouldSuperJump);
         getHitBox().x = (int) getX();
         getHitBox().y = (int) getY();

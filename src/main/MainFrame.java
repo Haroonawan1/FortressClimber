@@ -7,38 +7,49 @@ import javax.swing.ImageIcon;
 import java.awt.*;
 
 public class MainFrame extends JFrame implements Runnable {
-    private DrawPanel drawPanel;
     private MapManager mapManager;
     private Player player;
+    private DrawPanel drawPanel;
     private Input input;
     private Thread thread;
+
     private int fps;
     private int ups;
-    private int numTileWidth;
-    private int numTileHeight;
+
     private int tileSize;
     private int tileScale;
     private int finalTileSize;
+
+    private int numTileWidth;
+    private int numTileHeight;
     private int frameWidth;
     private int frameHeight;
 
+    private int xBoundLeft;
+    private int xBoundRight;
+
     public MainFrame() {
         super("Fortress Climber");
-
-        fps = 120;
-        ups = 200;
-        numTileHeight = 15;
-        numTileWidth = 30;
-        tileSize = 16;
-        tileScale = 3;
-        finalTileSize = tileSize * tileScale;
-        frameWidth = numTileWidth * (tileSize * tileScale);
-        frameHeight = numTileHeight * (tileSize * tileScale);
 
         mapManager = new MapManager("data/mapData/dungeonTileSet.png", this);
         player = new Player(100, 100, 0, 0, this, mapManager, new Rectangle(100, 100, finalTileSize, finalTileSize));
         drawPanel = new DrawPanel(player, mapManager);
         input = new Input(player);
+
+        fps = 120;
+        ups = 200;
+
+        tileSize = 16;
+        tileScale = 3;
+        finalTileSize = tileSize * tileScale;
+
+        numTileHeight = 15;
+        numTileWidth = 30;
+        frameWidth = numTileWidth * (tileSize * tileScale);
+        frameHeight = numTileHeight * (tileSize * tileScale);
+
+        xBoundLeft = 0;
+        xBoundRight = 60 * finalTileSize;
 
         this.add(drawPanel);
         this.addKeyListener(input);
