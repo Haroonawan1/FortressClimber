@@ -26,8 +26,7 @@ public class MapManager {
         tileSetImage = loadTileSetImage(filePath);
         mapDataFileArr = loadMapDataFile("data/mapData/map1");
         tileSetArr = loadTileSetArr();
-        collisionArr = new Tile[tileSetArr.length * tileSetArr[0].length];
-
+        collisionArr = new Tile[mapDataFileArr.length * mapDataFileArr[0].length];
         finalTileSize = mainFrame.getFinalTileSize();
     }
 
@@ -44,11 +43,13 @@ public class MapManager {
     }
 
     public BufferedImage[][] loadTileSetArr() {
-        tileSetArr = new BufferedImage[mapDataFileArr.length][mapDataFileArr[0].length];
-        for (int row = 0; row < 15; row++) {
-            for (int col = 0; col < 18; col++) {
+        tileSetArr = new BufferedImage[18][15];
+        for (int row = 0; row < 18; row++) {
+            for (int col = 0; col < 15; col++) {
                 int tileSize = mainFrame.getTileSize();
-                tileSetArr[row][col] = tileSetImage.getSubimage(row * tileSize, col * tileSize, tileSize, tileSize);
+                tileSize = 16;
+                //System.out.println("tileSize: " + tileSize + " | col: " + col + " | row: " + row + " | row * tile: " + (row * tileSize) + " | col * tile: " + (col * tileSize));
+                tileSetArr[row][col] = tileSetImage.getSubimage(col * tileSize, row * tileSize, tileSize, tileSize);
             }
         }
         return tileSetArr;
@@ -93,18 +94,34 @@ public class MapManager {
     }
 
     public void drawMap(Graphics g) {
+        //System.out.println("skibidi fortnite");
+        finalTileSize = 48;
+
+
+        System.out.println();
         for (int row = 0; row < mapDataFileArr.length; row++) {
             for (int col = 0; col < mapDataFileArr[0].length; col++) {
-                int tileId = Integer.parseInt(mapDataFileArr[row][col]);
-                int tileSetX = 0;
-                int tileSetY = tileId;
 
-                while (tileSetY > tileSetArr.length) {
-                    tileSetX++;
-                    tileSetY -= tileSetArr.length;
+                int tileSetRow = Integer.parseInt(mapDataFileArr[row][col]);
+                int tileSetCol = 0;
+
+
+
+                while (tileSetRow > tileSetArr[0].length) {
+                    tileSetCol++;
+                    tileSetRow -= tileSetArr[0].length;
                 }
 
-                g.drawImage(tileSetArr[tileSetY][tileSetX], col * finalTileSize, row * finalTileSize, finalTileSize, finalTileSize,  null);
+                if (tileSetRow != 0) {
+                    tileSetRow -= 1;
+                }
+
+                tileSetCol += 1;
+
+
+                System.out.println("tileRow: " + tileSetRow + " | tileCol: " + tileSetCol);
+
+                g.drawImage(tileSetArr[tileSetRow][tileSetCol], col * finalTileSize, row * finalTileSize, finalTileSize, finalTileSize,  null);
             }
         }
     }

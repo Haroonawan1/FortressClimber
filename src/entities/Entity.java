@@ -169,7 +169,6 @@ public class Entity {
         }
 
 
-
         emptyCollidingTiles();
     }
 
