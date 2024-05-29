@@ -15,14 +15,29 @@ public class Player extends Entity{
     private boolean shouldWallJump;
     private boolean shouldSuperJump;
 
+    private MainFrame mainFrame;
+
     public Player(double x, double y, double velocityX, double velocityY, MainFrame mainFrame, MapManager mapManager, Rectangle hitbox) {
         super(x, y, velocityX, velocityY, mainFrame, mapManager, hitbox);
+        this.mainFrame = mainFrame;
         setFalling(true);
         jumpHeightCount = 0;
         shouldWallJump = false;
     }
 
     public void updatePosition() {
+        if (getHitBox().x > mainFrame.getXBoundRight() && isMovingRight()) {
+            mainFrame.setMapOffset((int) (mainFrame.getMapOffset() + getVelocityX()));
+            round(mainFrame.getMapOffset());
+        }
+
+        if (getHitBox().x < mainFrame.getXBoundLeft() && isMovingLeft()) {
+            mainFrame.setMapOffset((int) (mainFrame.getMapOffset() + getVelocityX()));
+            round(mainFrame.getMapOffset());
+        }
+
+        System.out.println(mainFrame.getMapOffset());
+
         if (isTouchingCorner()) {
             touchedCorner = true;
         }
@@ -175,6 +190,7 @@ public class Player extends Entity{
         g.setColor(Color.RED);
         g.fillRect(getHitBox().x, getHitBox().y, getHitBox().width, getHitBox().height);
     }
+
 
     public void update() {
         updateCollisionPoints();

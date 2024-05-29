@@ -27,14 +27,10 @@ public class MainFrame extends JFrame implements Runnable {
 
     private int xBoundLeft;
     private int xBoundRight;
+    private int mapOffset;
 
     public MainFrame() {
         super("Fortress Climber");
-
-        mapManager = new MapManager("data/mapData/dungeonTileSet.png", this);
-        player = new Player(100, 100, 0, 0, this, mapManager, new Rectangle(100, 100, finalTileSize, finalTileSize));
-        drawPanel = new DrawPanel(player, mapManager);
-        input = new Input(player);
 
         fps = 120;
         ups = 200;
@@ -45,11 +41,19 @@ public class MainFrame extends JFrame implements Runnable {
 
         numTileHeight = 15;
         numTileWidth = 30;
-        frameWidth = numTileWidth * (tileSize * tileScale);
-        frameHeight = numTileHeight * (tileSize * tileScale);
+        frameWidth = numTileWidth * finalTileSize;
+        frameHeight = numTileHeight * finalTileSize;
 
-        xBoundLeft = 0;
-        xBoundRight = 60 * finalTileSize;
+        xBoundLeft = 400;
+        xBoundRight = 1054;
+        mapOffset = 0;
+
+
+        mapManager = new MapManager("data/mapData/dungeonTileSet.png", this);
+        player = new Player(100, 100, 0, 0, this, mapManager, new Rectangle(100, 100, finalTileSize, finalTileSize));
+        drawPanel = new DrawPanel(player, mapManager);
+        input = new Input(player);
+
 
         this.add(drawPanel);
         this.addKeyListener(input);
@@ -57,10 +61,11 @@ public class MainFrame extends JFrame implements Runnable {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setIconImage(new ImageIcon("data/miscData/fortressIcon.png").getImage());
         // not sure why I need to add these
-        this.setSize(frameWidth + 14, frameHeight + 38);
+        this.setSize(frameWidth + 14, frameHeight + 38);    // W: 1454
         this.setLocation(500, 200);
         this.setResizable(false);
         this.setVisible(true);
+
 
         startThread();
     }
@@ -123,5 +128,21 @@ public class MainFrame extends JFrame implements Runnable {
 
     public int getFinalTileSize(){
         return finalTileSize;
+    }
+
+    public int getXBoundLeft() {
+        return xBoundLeft;
+    }
+
+    public int getXBoundRight() {
+        return xBoundRight;
+    }
+
+    public int getMapOffset() {
+        return mapOffset;
+    }
+
+    public void setMapOffset(int mapOffset) {
+        this.mapOffset = mapOffset;
     }
 }
