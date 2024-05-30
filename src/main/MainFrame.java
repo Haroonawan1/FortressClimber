@@ -27,7 +27,10 @@ public class MainFrame extends JFrame implements Runnable {
 
     private int xBoundLeft;
     private int xBoundRight;
-    private int mapOffset;
+    private int yBoundTop;
+    private int yBoundBottom;
+    private int xMapOffset;
+    private int yMapOffset;
 
     public MainFrame() {
         super("Fortress Climber");
@@ -44,9 +47,12 @@ public class MainFrame extends JFrame implements Runnable {
         frameWidth = numTileWidth * finalTileSize;
         frameHeight = numTileHeight * finalTileSize;
 
-        xBoundLeft = 400;
-        xBoundRight = 1054;
-        mapOffset = 0;
+        xBoundLeft = 700;
+        xBoundRight = frameWidth - xBoundLeft;
+        yBoundTop = 100;
+        yBoundBottom = frameHeight - yBoundTop;
+        xMapOffset = 0;
+        yMapOffset = 0;
 
 
         mapManager = new MapManager("data/mapData/dungeonTileSet.png", this);
@@ -138,11 +144,27 @@ public class MainFrame extends JFrame implements Runnable {
         return xBoundRight;
     }
 
-    public int getMapOffset() {
-        return mapOffset;
+    public int getYBoundTop() {
+        return yBoundTop;
     }
 
-    public void setMapOffset(int mapOffset) {
-        this.mapOffset = mapOffset;
+    public int getYBoundBottom() {
+        return yBoundBottom;
+    }
+
+    public int getXMapOffset() {
+        return xMapOffset;
+    }
+
+    public void setXMapOffset(int xMapOffset) {
+        this.xMapOffset = xMapOffset;
+    }
+
+    public int getYMapOffset() {
+        return yMapOffset;
+    }
+
+    public void setYMapOffset(int yMapOffset) {
+        this.yMapOffset = yMapOffset;
     }
 }

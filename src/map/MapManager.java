@@ -87,7 +87,7 @@ public class MapManager {
                 int tileID = Integer.parseInt(mapDataFileArr[row][col]);
                 int index = (row * mapDataFileArr[0].length) + col;
 
-                Tile tile = new Tile((col * finalTileSize) - mainFrame.getMapOffset(), row * finalTileSize, finalTileSize, finalTileSize, tileID);
+                Tile tile = new Tile((col * finalTileSize) - mainFrame.getXMapOffset(), (row * finalTileSize) - mainFrame.getYMapOffset(), finalTileSize, finalTileSize, tileID);
                 collisionArr[index] = tile;
             }
         }
@@ -107,7 +107,7 @@ public class MapManager {
 
                 }
 
-                g.drawImage(tileSetArr[tileSetRow][tileSetCol], (col * finalTileSize) - mainFrame.getMapOffset(), row * finalTileSize, finalTileSize, finalTileSize,  null);
+                g.drawImage(tileSetArr[tileSetRow][tileSetCol], (col * finalTileSize) - mainFrame.getXMapOffset(), (row * finalTileSize) - mainFrame.getYMapOffset(), finalTileSize, finalTileSize,  null);
             }
         }
     }

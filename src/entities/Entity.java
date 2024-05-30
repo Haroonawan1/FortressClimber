@@ -65,7 +65,6 @@ public class Entity {
     public void updateCollisionPoints() {
         String solidTileIDs = ":16:17:18:20:21:31:32:33:35:36:46:47:48:50:51:76:77:78:91:92:93:106:107:108:";
         for (Tile tile : mapManager.getCollisionArr()) {
-            //System.out.println(tile);
             if (solidTileIDs.contains(":" + tile.getTileID() + ":")) {
                 p1 = tile.getHitBox().contains(hitBox.getX() + velocityX, hitBox.getY() + velocityY);
                 p2 = tile.getHitBox().contains(hitBox.getX() + hitBox.width + velocityX, hitBox.getY() + velocityY);
@@ -102,7 +101,7 @@ public class Entity {
 
 
         //System.out.println(botLeft.getX() + " , " + botLeft.getY());
-        //System.out.println("   p1: " + p1 + " p2: " + p2  + " p3: " + p3 + " p4: " + p4 + " ");
+        //System.out.print("   p1: " + p1 + " p2: " + p2  + " p3: " + p3 + " p4: " + p4 + " ");
         //System.out.println(" | falling: " + falling +  " | x: " + x  + " | y: " + y + " | velx: " + velocityX + " | vely: " + velocityY + " | wallRight: " + touchingWallRight + " | floor: " + touchingFloor + " | movingleft: " + movingLeft);
     }
 

@@ -16,6 +16,8 @@ public class Player extends Entity{
     private boolean shouldSuperJump;
 
     private MainFrame mainFrame;
+    private boolean xScreenMoving;
+    private boolean yScreenMoving;
 
     public Player(double x, double y, double velocityX, double velocityY, MainFrame mainFrame, MapManager mapManager, Rectangle hitbox) {
         super(x, y, velocityX, velocityY, mainFrame, mapManager, hitbox);
@@ -26,24 +28,39 @@ public class Player extends Entity{
     }
 
     public void updatePosition() {
-        if (getHitBox().x > mainFrame.getXBoundRight() && isMovingRight()) {
-            mainFrame.setMapOffset((int) (mainFrame.getMapOffset() + getVelocityX()));
-            round(mainFrame.getMapOffset());
+
+        if (getHitBox().x + getHitBox().width >= mainFrame.getXBoundRight() && isMovingRight()) {
+            xScreenMoving = true;
+            mainFrame.setXMapOffset((int) (mainFrame.getXMapOffset() + getVelocityX()));
+        }
+        else if (getHitBox().x <= mainFrame.getXBoundLeft() && isMovingLeft()) {
+            xScreenMoving = true;
+            mainFrame.setXMapOffset((int) (mainFrame.getXMapOffset() + getVelocityX()));
+        }
+        else {
+            xScreenMoving = false;
         }
 
-        if (getHitBox().x < mainFrame.getXBoundLeft() && isMovingLeft()) {
-            mainFrame.setMapOffset((int) (mainFrame.getMapOffset() + getVelocityX()));
-            round(mainFrame.getMapOffset());
+
+        if (getHitBox().y <= mainFrame.getYBoundTop() && isJumping()) {
+            yScreenMoving = true;
+            mainFrame.setYMapOffset((int) (mainFrame.getYMapOffset() + getVelocityY()));
+        }
+        else if (getHitBox().y + getHitBox().height >= mainFrame.getYBoundBottom() && isFalling()) {
+            yScreenMoving = true;
+            mainFrame.setYMapOffset((int) (mainFrame.getYMapOffset() + getVelocityY()));
+        }
+        else {
+            yScreenMoving = false;
         }
 
-        System.out.println(mainFrame.getMapOffset());
 
         if (isTouchingCorner()) {
             touchedCorner = true;
         }
 
 
-        if ((((isTouchingWallRight() && isMovingRight()) || (isTouchingWallLeft() && isMovingLeft())) && !isTouchingFloor()) || (isMovingDown() && isTouchingFloor())) {
+        if (((((isTouchingWallRight() && isMovingRight()) || (isTouchingWallLeft() && isMovingLeft())) && !isTouchingFloor()) || (isMovingDown() && isTouchingFloor())) ) {
             setVelocityX(0);
         }
         else if ((!isMovingRight() && !isMovingLeft())) {
@@ -139,7 +156,10 @@ public class Player extends Entity{
             }
         }
 
-        setX(getX() + getVelocityX());
+        if (!xScreenMoving) {
+            setX(getX() + getVelocityX());
+        }
+
     }
 
     public void moveLeft(int maxSpeed, double delta) {
@@ -150,12 +170,18 @@ public class Player extends Entity{
             }
         }
 
-        setX(getX() + getVelocityX());
+        if (!xScreenMoving) {
+            setX(getX() + getVelocityX());
+        }
     }
 
     public void jump(int jumpHeightLimit, int jumpSpeed) {
         setVelocityY(-jumpSpeed);
-        setY(getY() + getVelocityY());
+
+        if (!yScreenMoving) {
+            setY(getY() + getVelocityY());
+        }
+
 
         jumpHeightCount += getVelocityY();
         if (jumpHeightCount + getVelocityY() < -jumpHeightLimit) {
@@ -171,7 +197,10 @@ public class Player extends Entity{
 
     public void freeFall() {
         setVelocityY(getVelocityY() + 0.15);
-        setY(getY() + getVelocityY());
+
+        if (!yScreenMoving) {
+            setY(getY() + getVelocityY());
+        }
     }
 
 
@@ -183,7 +212,7 @@ public class Player extends Entity{
     public void draw(Graphics g) {
         //System.out.println("canSlide: " + canSlide() + " | touchingfloor: " + isTouchingFloor() + " | velx: " + getVelocityX() +  " | vely: " + getVelocityY());
         //System.out.println("x: " + getX() + " | y: " + getY() + " | hitboxX: " + getHitBox().x + " | hitboxY: " + getHitBox().y +  " | xvel: " + getVelocityX() + " | yvel: " + getVelocityY() + " | left: " + isMovingLeft() + " | right: " + isMovingRight() + " | down: " + isMovingDown());
-        //System.out.println("x: " + getX() + " | y: " + getY() +  " | xvel: " + getVelocityX() + " | yvel: " + getVelocityY() + " | superjumpcount: " + superJumpCount + " | should shuperjump : " + shouldSuperJump);
+        //System.out.println("x: " + getX() + " | y: " + getY() +  " | xvel: " + getVelocityX() + " | yvel: " + getVelocityY() + " | screenMoving: " + screenMoving + " | offset : " + mainFrame.getMapOffset());
         getHitBox().x = (int) getX();
         getHitBox().y = (int) getY();
 
