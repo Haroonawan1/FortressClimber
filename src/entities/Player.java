@@ -42,11 +42,11 @@ public class Player extends Entity{
         }
 
 
-        if (getHitBox().y <= mainFrame.getYBoundTop() && isJumping()) {
+        if (getHitBox().y <= mainFrame.getYBoundTop() && getVelocityY() < 0) {
             yScreenMoving = true;
             mainFrame.setYMapOffset((int) (mainFrame.getYMapOffset() + getVelocityY()));
         }
-        else if (getHitBox().y + getHitBox().height >= mainFrame.getYBoundBottom() && isFalling()) {
+        else if (getHitBox().y + getHitBox().height >= mainFrame.getYBoundBottom() && getVelocityY() > 0) {
             yScreenMoving = true;
             mainFrame.setYMapOffset((int) (mainFrame.getYMapOffset() + getVelocityY()));
         }
@@ -54,6 +54,7 @@ public class Player extends Entity{
             yScreenMoving = false;
         }
 
+        System.out.println("yoffset: " + mainFrame.getYMapOffset() + " | y: " + getY());
 
         if (isTouchingCorner()) {
             touchedCorner = true;
@@ -104,7 +105,6 @@ public class Player extends Entity{
         else {
             sliding = false;
         }
-
 
         if (isMovingDown()) {
             superJumpCount += 1;
@@ -206,7 +206,10 @@ public class Player extends Entity{
 
     public void slide() {
         setVelocityY(getVelocityY() + 0.01);
-        setY(getY() + getVelocityY());
+
+        if (!yScreenMoving) {
+            setY(getY() + getVelocityY());
+        }
     }
 
     public void draw(Graphics g) {

@@ -47,16 +47,16 @@ public class MainFrame extends JFrame implements Runnable {
         frameWidth = numTileWidth * finalTileSize;
         frameHeight = numTileHeight * finalTileSize;
 
-        xBoundLeft = 700;
+        xBoundLeft = finalTileSize * 12;
         xBoundRight = frameWidth - xBoundLeft;
-        yBoundTop = 100;
+        yBoundTop = finalTileSize * 4;
         yBoundBottom = frameHeight - yBoundTop;
         xMapOffset = 0;
         yMapOffset = 0;
 
 
         mapManager = new MapManager("data/mapData/dungeonTileSet.png", this);
-        player = new Player(100, 100, 0, 0, this, mapManager, new Rectangle(100, 100, finalTileSize, finalTileSize));
+        player = new Player(100, 400, 0, 0, this, mapManager, new Rectangle(100, 100, finalTileSize, finalTileSize));
         drawPanel = new DrawPanel(player, mapManager);
         input = new Input(player);
 
