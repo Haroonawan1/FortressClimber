@@ -15,10 +15,6 @@ public class Entity {
     private double y;
     private double velocityX;
     private double velocityY;
-
-    // going to use these later
-    private double maxSpeedX;
-    private double maxSpeedY;
     private double accelerationX;
     private double accelerationY;
 
@@ -49,6 +45,8 @@ public class Entity {
         this.y = y;
         this.velocityX = velocityX;
         this.velocityY = velocityY;
+        accelerationX = 0;
+        accelerationY = 0;
 
         p1 = false;
         p2 = false;
@@ -97,12 +95,6 @@ public class Entity {
                 p4 = true;
             }
         }
-
-
-
-        //System.out.println(botLeft.getX() + " , " + botLeft.getY());
-        //System.out.print("   p1: " + p1 + " p2: " + p2  + " p3: " + p3 + " p4: " + p4 + " ");
-        //System.out.println(" | falling: " + falling +  " | x: " + x  + " | y: " + y + " | velx: " + velocityX + " | vely: " + velocityY + " | wallRight: " + touchingWallRight + " | floor: " + touchingFloor + " | movingleft: " + movingLeft);
     }
 
     public void updateCollisionConstants() {
@@ -299,5 +291,21 @@ public class Entity {
 
     public void setJumping(boolean jumping) {
         this.jumping = jumping;
+    }
+
+    public double getAccelerationX() {
+        return accelerationX;
+    }
+
+    public void setAccelerationX(double accelerationX) {
+        this.accelerationX = accelerationX;
+    }
+
+    public double getAccelerationY() {
+        return accelerationY;
+    }
+
+    public void setAccelerationY(double accelerationY) {
+        this.accelerationY = accelerationY;
     }
 }

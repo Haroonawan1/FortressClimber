@@ -35,7 +35,7 @@ public class MainFrame extends JFrame implements Runnable {
     public MainFrame() {
         super("Fortress Climber");
 
-        fps = 120;
+        fps = 100;
         ups = 200;
 
         tileSize = 16;

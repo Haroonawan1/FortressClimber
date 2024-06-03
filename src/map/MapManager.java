@@ -47,8 +47,7 @@ public class MapManager {
         for (int row = 0; row < 18; row++) {
             for (int col = 0; col < 15; col++) {
                 int tileSize = mainFrame.getTileSize();
-                tileSize = 16;
-                //System.out.println("tileSize: " + tileSize + " | col: " + col + " | row: " + row + " | row * tile: " + (row * tileSize) + " | col * tile: " + (col * tileSize));
+                //tileSize = 16;
                 tileSetArr[row][col] = tileSetImage.getSubimage(col * tileSize, row * tileSize, tileSize, tileSize);
             }
         }
