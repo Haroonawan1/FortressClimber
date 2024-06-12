@@ -6,6 +6,7 @@ public class Tile {
     private Rectangle hitBox;
     private int tileID;
     private boolean outLined;
+    private String color;
 
     public Tile(int x, int y, int width, int height, int tileID) {
         hitBox = new Rectangle(x, y, width, height);
@@ -16,8 +17,9 @@ public class Tile {
         return outLined;
     }
 
-    public void setOutLined(boolean outLined) {
+    public void setOutLined(boolean outLined, String color) {
         this.outLined = outLined;
+        this.color = color;
     }
 
     public Rectangle getHitBox() {
@@ -30,5 +32,17 @@ public class Tile {
 
     public String toString() {
         return "x: " + hitBox.getX() + " | y: " + hitBox.getY() + " | ID: " + tileID;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public void setTileID(int tileID) {
+        this.tileID = tileID;
     }
 }

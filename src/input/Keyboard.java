@@ -1,13 +1,13 @@
-package main;
+package input;
 
 import entities.Player;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-public class Input implements KeyListener {
+public class Keyboard implements KeyListener {
     private Player player;
 
-    public Input(Player player) {
+    public Keyboard(Player player) {
         this.player = player;
     }
 
@@ -17,6 +17,7 @@ public class Input implements KeyListener {
     public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_W -> {
+                player.setMovingUp(true);
                 if ((player.isTouchingFloor() || player.isTouchingWallRight() || player.isTouchingWallLeft()) && !player.isJumping()) {
                     player.setJumping(true);
                 }
@@ -30,7 +31,10 @@ public class Input implements KeyListener {
 
     public void keyReleased(KeyEvent e) {
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_W -> player.setJumping(false);
+            case KeyEvent.VK_W -> {
+                player.setJumping(false);
+                player.setMovingUp(false);
+            }
             case KeyEvent.VK_A -> player.setMovingLeft(false);
             case KeyEvent.VK_S -> player.setMovingDown(false);
             case KeyEvent.VK_D -> player.setMovingRight(false);

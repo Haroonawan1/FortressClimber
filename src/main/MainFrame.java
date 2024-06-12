@@ -1,17 +1,21 @@
 package main;
 
+import entities.Entity;
 import entities.Player;
+import input.Keyboard;
 import map.MapManager;
 import javax.swing.JFrame;
 import javax.swing.ImageIcon;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class MainFrame extends JFrame implements Runnable {
     private MapManager mapManager;
     private Player player;
     private DrawPanel drawPanel;
-    private Input input;
+    private Keyboard keyboard;
     private Thread thread;
+    private ArrayList<Entity> entities;
 
     private int fps;
     private int ups;
@@ -19,6 +23,7 @@ public class MainFrame extends JFrame implements Runnable {
     private int tileSize;
     private int tileScale;
     private int finalTileSize;
+    private double playerSize;
 
     private int numTileWidth;
     private int numTileHeight;
@@ -32,6 +37,7 @@ public class MainFrame extends JFrame implements Runnable {
     private int xMapOffset;
     private int yMapOffset;
 
+
     public MainFrame() {
         super("Fortress Climber");
 
@@ -41,6 +47,7 @@ public class MainFrame extends JFrame implements Runnable {
         tileSize = 16;
         tileScale = 3;
         finalTileSize = tileSize * tileScale;
+        playerSize = tileSize * 2.5;
 
         numTileHeight = 15;
         numTileWidth = 30;
@@ -54,15 +61,18 @@ public class MainFrame extends JFrame implements Runnable {
         xMapOffset = 0;
         yMapOffset = 0;
 
+        entities = new ArrayList<>();
 
         mapManager = new MapManager("data/mapData/dungeonTileSet.png", this);
-        player = new Player(100, 400, 0, 0, this, mapManager, new Rectangle(100, 100, finalTileSize, finalTileSize));
-        drawPanel = new DrawPanel(player, mapManager);
-        input = new Input(player);
+        player = new Player(600, 400, 0, 0, this, mapManager, new Rectangle(100, 100, (int) playerSize, (int) playerSize));
+        drawPanel = new DrawPanel(player, mapManager, this);
+        keyboard = new Keyboard(player);
+
+        entities.add(player);
 
 
         this.add(drawPanel);
-        this.addKeyListener(input);
+        this.addKeyListener(keyboard);
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setIconImage(new ImageIcon("data/miscData/fortressIcon.png").getImage());
@@ -71,7 +81,6 @@ public class MainFrame extends JFrame implements Runnable {
         this.setLocation(500, 200);
         this.setResizable(false);
         this.setVisible(true);
-
 
         startThread();
     }
@@ -166,5 +175,9 @@ public class MainFrame extends JFrame implements Runnable {
 
     public void setYMapOffset(int yMapOffset) {
         this.yMapOffset = yMapOffset;
+    }
+
+    public ArrayList<Entity> getEntities() {
+        return entities;
     }
 }

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class Entity {
     private MainFrame mainFrame;
     private MapManager mapManager;
-    private Rectangle hitBox;   
+    private Rectangle hitBox;
 
     private double x;
     private double y;
@@ -17,6 +17,7 @@ public class Entity {
     private double velocityY;
     private double accelerationX;
     private double accelerationY;
+    private int maxXSpeed;
 
     private boolean touchingFloor;
     private boolean touchingCeiling;
@@ -29,10 +30,12 @@ public class Entity {
     private boolean p3;
     private boolean p4;
     private ArrayList<Tile> collidingTiles;
+    private ArrayList<Tile> interactables;
 
     private boolean movingLeft;
     private boolean movingRight;
     private boolean movingDown;
+    private boolean movingUp;
     private boolean falling;
     private boolean jumping;
 
@@ -53,6 +56,7 @@ public class Entity {
         p3 = false;
         p4 = false;
         collidingTiles = new ArrayList<>();
+        interactables = new ArrayList<>();
 
         movingLeft = false;
         movingRight = false;
@@ -61,17 +65,24 @@ public class Entity {
     }
 
     public void updateCollisionPoints() {
-        String solidTileIDs = ":16:17:18:20:21:31:32:33:35:36:46:47:48:50:51:76:77:78:91:92:93:106:107:108:";
-        for (Tile tile : mapManager.getCollisionArr()) {
-            if (solidTileIDs.contains(":" + tile.getTileID() + ":")) {
-                p1 = tile.getHitBox().contains(hitBox.getX() + velocityX, hitBox.getY() + velocityY);
-                p2 = tile.getHitBox().contains(hitBox.getX() + hitBox.width + velocityX, hitBox.getY() + velocityY);
-                p3 = tile.getHitBox().contains(hitBox.getX() + hitBox.width + velocityX, hitBox.getY() + hitBox.height + velocityY);
-                p4 = tile.getHitBox().contains(hitBox.getX() + velocityX, hitBox.getY() + hitBox.height + velocityY);
+        String solidTileIDs = ":16:17:18:20:21:31:33:35:36:46:47:48:50:51:76:77:78:80:81:91:92:93:106:107:108:142:";
+        String interactableTileIDs = ":140:170:";
 
-                if (p1 || p2 || p3 || p4) {
+        for (Tile tile : mapManager.getCollisionArr()) {
+            p1 = tile.getHitBox().contains(hitBox.getX() + velocityX, hitBox.getY() + velocityY);
+            p2 = tile.getHitBox().contains(hitBox.getX() + hitBox.width + velocityX, hitBox.getY() + velocityY);
+            p3 = tile.getHitBox().contains(hitBox.getX() + hitBox.width + velocityX, hitBox.getY() + hitBox.height + velocityY);
+            p4 = tile.getHitBox().contains(hitBox.getX() + velocityX, hitBox.getY() + hitBox.height + velocityY);
+
+            if (p1 || p2 || p3 || p4) {
+
+                if (solidTileIDs.contains(":" + tile.getTileID() + ":")) {
                     collidingTiles.add(tile);
-                    tile.setOutLined(true);
+                    tile.setOutLined(true, "green");
+                }
+                else if (interactableTileIDs.contains(":" + tile.getTileID() + ":")) {
+                    interactables.add(tile);
+                    tile.setOutLined(true, "blue");
                 }
             }
         }
@@ -112,7 +123,7 @@ public class Entity {
             // Have to get rid of one because pixel placement is weird
             // Either everything is 1 pixel to the left (most likely not)
             // getting the X of a hitBox gives will not equate to the X in which you collide (more likely)
-            x = smallestX + hitBox.width - 1;
+            x = smallestX + mainFrame.getFinalTileSize() - 1;
             touchingWallLeft = true;
         }
         else if (p2 && p3) {
@@ -150,10 +161,10 @@ public class Entity {
             touchingFloor = true;
             touchingCeiling = false;
         }
-        else if ((p1 || p2) && (!touchingWallRight && !touchingWallLeft) && !movingDown) {
+        else if ((p1 || p2) && (!touchingWallRight && !touchingWallLeft)) {
             velocityY = 0;
 
-            y = collidingTiles.get(0).getHitBox().getY() + hitBox.height;
+            y = collidingTiles.get(0).getHitBox().getY() + mainFrame.getFinalTileSize();
             touchingFloor = false;
             touchingCeiling = true;
         }
@@ -173,12 +184,28 @@ public class Entity {
         }
     }
 
-    public double round(double num) {
-        return Math.round(num * Math.pow(10, 2)) / Math.pow(10,2);
+    public void emptyInteractableTiles() {
+        for (int i = 0; i < interactables.size(); i++) {
+            interactables.remove(i);
+            i--;
+        }
     }
+
+    public double round(double num, int decimalPlaces) {
+        return Math.round(num * Math.pow(10, decimalPlaces)) / Math.pow(10, decimalPlaces);
+    }
+
 
     public boolean isTouchingFloor() {
         return touchingFloor;
+    }
+
+    public int getMaxXSpeed() {
+        return maxXSpeed;
+    }
+
+    public void setMaxXSpeed(int maxXSpeed) {
+        this.maxXSpeed = maxXSpeed;
     }
 
     public void setTouchingFloor(boolean touchingFloor) {
@@ -197,20 +224,12 @@ public class Entity {
         return touchingWallLeft;
     }
 
-    public void setTouchingWallLeft(boolean touchingWallLeft) {
-        this.touchingWallLeft = touchingWallLeft;
-    }
-
-    public void setTouchingWallRight(boolean touchingWallRight) {
-        this.touchingWallRight = touchingWallRight;
-    }
-
     public double getX() {
         return x;
     }
 
     public void setX(double x) {
-        this.x = round(x);
+        this.x = round(x, 3);
     }
 
     public double getY() {
@@ -218,7 +237,7 @@ public class Entity {
     }
 
     public void setY(double y) {
-        this.y = round(y);
+        this.y = round(y, 3);
     }
 
     public double getVelocityX() {
@@ -226,7 +245,7 @@ public class Entity {
     }
 
     public void setVelocityX(double velocityX) {
-        this.velocityX = round(velocityX);
+        this.velocityX = round(velocityX, 3);
     }
 
     public double getVelocityY() {
@@ -234,7 +253,7 @@ public class Entity {
     }
 
     public void setVelocityY(double velocityY) {
-        this.velocityY = round(velocityY);
+        this.velocityY = round(velocityY, 3);
     }
 
     public Rectangle getHitBox() {
@@ -269,12 +288,16 @@ public class Entity {
         this.movingDown = movingDown;
     }
 
-    public boolean isTouchingCorner() {
-        return touchingCorner;
+    public boolean isMovingUp() {
+        return movingUp;
     }
 
-    public void setTouchingCorner(boolean touchingCorner) {
-        this.touchingCorner = touchingCorner;
+    public void setMovingUp(boolean movingUp) {
+        this.movingUp = movingUp;
+    }
+
+    public boolean isTouchingCorner() {
+        return touchingCorner;
     }
 
     public boolean isFalling() {
@@ -307,5 +330,9 @@ public class Entity {
 
     public void setAccelerationY(double accelerationY) {
         this.accelerationY = accelerationY;
+    }
+
+    public ArrayList<Tile> getInteractables() {
+        return interactables;
     }
 }

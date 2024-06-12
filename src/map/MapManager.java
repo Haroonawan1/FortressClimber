@@ -1,8 +1,10 @@
 package map;
 
+import entities.Entity;
+import entities.Player;
 import main.MainFrame;
 import javax.imageio.ImageIO;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,23 +25,23 @@ public class MapManager {
     public MapManager(String filePath, MainFrame mainFrame) {
         this.mainFrame = mainFrame;
 
-        tileSetImage = loadTileSetImage(filePath);
+        loadTileSetImage(filePath);
         mapDataFileArr = loadMapDataFile("data/mapData/map1");
         tileSetArr = loadTileSetArr();
         collisionArr = new Tile[mapDataFileArr.length * mapDataFileArr[0].length];
         finalTileSize = mainFrame.getFinalTileSize();
+        mapEntityCheck();
     }
 
-    public BufferedImage loadTileSetImage(String filePath) {
+    public void loadTileSetImage(String filePath) {
         tileSetImage = null;
         try {
-            return tileSetImage = ImageIO.read(new File(filePath));
+            tileSetImage = ImageIO.read(new File(filePath));
         }
         catch (IOException e) {
             System.out.println("File not found");
             System.exit(1);
         }
-        return tileSetImage;
     }
 
     public BufferedImage[][] loadTileSetArr() {
@@ -47,7 +49,6 @@ public class MapManager {
         for (int row = 0; row < 18; row++) {
             for (int col = 0; col < 15; col++) {
                 int tileSize = mainFrame.getTileSize();
-                //tileSize = 16;
                 tileSetArr[row][col] = tileSetImage.getSubimage(col * tileSize, row * tileSize, tileSize, tileSize);
             }
         }
@@ -80,6 +81,24 @@ public class MapManager {
         return mapDataFileArr;
     }
 
+
+    public void mapEntityCheck() {
+        for (int row = 0; row < mapDataFileArr.length; row++) {
+            for (int col = 0; col < mapDataFileArr[0].length; col++) {
+                int tileID = Integer.parseInt(mapDataFileArr[row][col]);
+
+                if (tileID == 160 || tileID == 145) {
+                    int x = col * finalTileSize;
+                    int y = row * finalTileSize;
+
+                    mainFrame.getEntities().add(new Entity(x, y, 0, 0, mainFrame, this, new Rectangle(x, y, finalTileSize, finalTileSize)));
+                }
+
+            }
+        }
+    }
+
+
     public void updateCollisionArr(String[][] mapDataFileArr) {
         for (int row = 0; row < mapDataFileArr.length; row++) {
             for (int col = 0; col < mapDataFileArr[0].length; col++) {
@@ -87,18 +106,25 @@ public class MapManager {
                 int index = (row * mapDataFileArr[0].length) + col;
 
                 Tile tile = new Tile((col * finalTileSize) - mainFrame.getXMapOffset(), (row * finalTileSize) - mainFrame.getYMapOffset(), finalTileSize, finalTileSize, tileID);
+
+                if (tileID == 145 || tileID == 160) {
+                    tile.setTileID(0);
+                }
+
                 collisionArr[index] = tile;
             }
         }
     }
 
     public void drawMap(Graphics g) {
-        finalTileSize = 48;
-
         for (int row = 0; row < mapDataFileArr.length; row++) {
             for (int col = 0; col < mapDataFileArr[0].length; col++) {
                 int tileSetCol = Integer.parseInt(mapDataFileArr[row][col]);
                 int tileSetRow = 0;
+
+//                if (tileSetCol == 160 || tileSetCol == 145) {
+//                    tileSetCol = 0;
+//                }
 
                 while (tileSetCol > tileSetArr[0].length) {
                     tileSetRow++;
@@ -112,6 +138,7 @@ public class MapManager {
     }
 
     public void update() {
+        //updateEntities();
         updateCollisionArr(loadMapDataFile("data/mapData/map1"));
     }
 
